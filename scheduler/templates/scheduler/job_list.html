@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Monitor simulations {{block.super}}
+{% endblock %}
+
+{% block content %}
+
+    <h1>Jobs</h1>
+
+    <h2>Queue</h2>
+    <ul>
+        {% for job in queue %}
+            <li>
+                {{job.pk}} {{job.application.name}} {{jon.priority}} {{job.queued}}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Executing</h2>
+    <ul>
+        {% for job in executing %}
+            <li>
+                {{job.pk}} {{job.application.name}} {{job.execution_start}}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Finished</h2>
+    <ul>
+        {% for job in finished %}
+            <li>
+                {{job.pk}} {{job.application.name}} {{job.status}} {{job.execution_end}}
+            </li>
+        {% endfor %}
+    </ul>
+
+
+
+{% endblock %}

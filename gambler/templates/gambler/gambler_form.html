@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Gambler simulation {{block.super}}
+{% endblock %}
+
+{% block content %}
+
+    <ul id="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    <form id="sim-parameters" action="{% url 'gambler:gambler_form' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input id="simulate-button" type="submit" value="Simulate">
+    </form>
+
+    <ol id="output">
+
+    </ol>
+
+    {{ status }}
+
+    <script>
+     timeout = 1000;
+
+     function getCookie(name) {
+         var cookieValue = null;
+         if (document.cookie && document.cookie !== '') {
+             var cookies = document.cookie.split(';');
+             for (var i = 0; i < cookies.length; i++) {
+                 var cookie = cookies[i].trim();
+                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                 }
+             }
+         }
+         return cookieValue;
+     }
+
+
+     var setMessage = function(msg, tag) {
+         if (msg.length > 0) {
+             var ul = document.getElementById("messages");
+             ul.innerHTML = "";
+             var li = document.createElement("li");
+             li.innerHTML = msg;
+             li.className += " " + tag;
+             ul.appendChild(li);
+         }
+     }
+
+     var getOutput = function() {
+         fetch("{% url 'gambler:gambler_fetch' %}", {
+             method: 'GET',
+             headers: {
+                 "X-CSRFToken": getCookie("csrftoken"),
+                 'Content-Type': 'application/json',
+             }
+         }).then(function(response) {
+             return response.json();
+         }).then(function(dict) {
+             setMessage(dict["msg"], dict["msgstatus"]);
+             var ul = document.getElementById("output");
+             for (const line of dict["lines"]) {
+                 ul.innerHTML += "<li>" + line + "</li>";
+             }
+             ul.scrollTop = ul.scrollHeight;
+             if (dict["status"] == "idle") {
+                 document.getElementById("simulate-button").disabled = false;
+                 var body = document.getElementsByTagName("body")[0];
+                 body.classList.remove("busy");
+
+             } else {
+                 var body = document.getElementsByTagName("body")[0];
+                 if (body.classList.contains("busy")) {
+                 } else {
+                     body.classList.add("busy");
+                 }
+                 setTimeout(getOutput, timeout);
+             }
+         });
+     }
+
+     window.addEventListener("load", function() {
+         var csrftoken = getCookie('csrftoken');
+         console.log("{{request.session.status}}");
+         if ("{{request.session.status}}" == "running") {
+             document.getElementById("simulate-button").disabled = true;
+             if ({{duplicate}} == 0) setTimeout(getOutput, timeout);
+         } else {
+             document.getElementById("simulate-button").disabled = false;
+         }
+     });
+
+    </script>
+{% endblock %}

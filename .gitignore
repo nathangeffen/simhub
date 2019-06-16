@@ -1,0 +1,9 @@
+*.txt
+media/
+*.sqlite*
+logs/*
+*.pyc
+*~
+\#*
+local_settings.py
+

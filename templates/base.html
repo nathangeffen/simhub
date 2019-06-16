@@ -1,0 +1,32 @@
+{% load static %}
+
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>
+            {% block title %}
+                | Simulation Hub
+            {% endblock %}
+        </title>
+
+        {% block meta %}
+        {% endblock %}
+
+        {% block styles %}
+            <style>
+             {% include "css/styles.css" %}
+            </style>
+        {% endblock %}
+    </head>
+
+    <body>
+        {% block content %}
+        {% endblock %}
+
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

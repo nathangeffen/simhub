@@ -1,0 +1,70 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.busy {
+    cursor: progress;
+}
+
+#messages {
+    list-style: none;
+    text-align: center;
+}
+
+#messages li {
+    padding: 12px;
+}
+
+#messages li.success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+
+#messages li.info {
+    color: #00529B;
+    background-color: #BDE5F8;
+}
+
+#messages li.warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+
+#messages li.error {
+    color: #D8000C;
+    background-color: #FFD2D2;
+}
+
+#sim-parameters label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+#sim-parameters input {
+    margin-bottom: 12px;
+}
+
+#simulate-button {
+    display: block;
+    margin-bottom: 14px;
+}
+
+#output {
+    height: 180px;
+    overflow-y: scroll;
+    font-size: 80%;
+    background-color: lightblue;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+
+#output li {
+    margin-left: 24px;
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
