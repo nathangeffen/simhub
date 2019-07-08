@@ -4,6 +4,13 @@
     Fast agent-based model of sexually transmitted infections {{block.super}}
 {% endblock %}
 
+{% block styles %}
+    {{block.super}}
+    <style>
+        {% include "faststi/faststi.css" %}
+    </style>
+{% endblock %}
+
 {% block content %}
 
     <ul id="messages">
@@ -19,9 +26,96 @@
     <form id="sim-parameters" action="{% url 'faststi:faststi_form' %}"
           method="post">
         {% csrf_token %}
-        {{ form.as_table }}
+        {{ form.non_field_errors }}
+        <div id="simulation-basic">
+            <div class="fieldWrapper">
+                {{ form.num_agents.errors }}
+                {{ form.num_agents.label_tag }}
+                {{ form.num_agents }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.time_step.errors }}
+                {{ form.time_step.label_tag }}
+                {{ form.time_step }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.simulation_period.errors }}
+                {{ form.simulation_period.label_tag }}
+                {{ form.simulation_period }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.report_frequency.errors }}
+                {{ form.report_frequency.label_tag }}
+                {{ form.report_frequency }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.match_k.errors }}
+                {{ form.match_k.label_tag }}
+                {{ form.match_k }}
+            </div>
+            <button type="button" class="collapsible">
+                Initial infections
+            </button>
+            <div  class="content">
+                <div class="fieldWrapper source-selector">
+                    {{ form.initial_infections_data_source.errors }}
+                    {{ form.initial_infections_data_source.label_tag }}
+                    {{ form.initial_infections_data_source }}
+                </div>
+                <div class="form-parms" id="initial-infections-fields">
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_15_20.errors }}
+                        {{ form.initial_infections_msm_15_20.label_tag }}
+                        {{ form.initial_infections_msm_15_20 }}
+                    </div>
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_20_25.errors }}
+                        {{ form.initial_infections_msm_20_25.label_tag }}
+                        {{ form.initial_infections_msm_20_25 }}
+                    </div>
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_25_30.errors }}
+                        {{ form.initial_infections_msm_25_30.label_tag }}
+                        {{ form.initial_infections_msm_25_30 }}
+                    </div>
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_30_35.errors }}
+                        {{ form.initial_infections_msm_30_35.label_tag }}
+                        {{ form.initial_infections_msm_30_35 }}
+                    </div>
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_35_40.errors }}
+                        {{ form.initial_infections_msm_35_40.label_tag }}
+                        {{ form.initial_infections_msm_35_40 }}
+                    </div>
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_40_45.errors }}
+                        {{ form.initial_infections_msm_40_45.label_tag }}
+                        {{ form.initial_infections_msm_40_45 }}
+                    </div>
+                    <div class="fieldWrapper">
+                        {{ form.initial_infections_msm_45_50.errors }}
+                        {{ form.initial_infections_msm_45_50.label_tag }}
+                        {{ form.initial_infections_msm_45_50 }}
+                    </div>
+                </div>
+                <div class="fieldWrapper file-parms">
+                    {{ form.initial_infections_file.errors }}
+                    {{ form.initial_infections_file.label_tag }}
+                    {{ form.initial_infections_file }}
+                </div>
+            </div>
+        </div>
         <input id="simulate-button" type="submit" value="Simulate">
     </form>
+
+    <div id="charts">
+        <canvas id="chart-prevalence">
+        </canvas>
+        <canvas id="chart-population">
+        </canvas>
+    </div>
+
 
     <ol id="output">
 
@@ -30,22 +124,108 @@
     {{ status }}
 
     <script>
-     timeout = 1000;
+     {% include 'faststi/Chart.bundle.min.js' %}
+    </script>
 
-     function getCookie(name) {
+    <script>
+     "use strict";
+     var timeout = 1000;
+
+     var getCookie = function(name) {
          var cookieValue = null;
          if (document.cookie && document.cookie !== '') {
              var cookies = document.cookie.split(';');
              for (var i = 0; i < cookies.length; i++) {
                  var cookie = cookies[i].trim();
                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     cookieValue = decodeURIComponent(cookie.substring(
+                         name.length + 1));
                      break;
                  }
              }
          }
          return cookieValue;
      }
+
+     var ctx_prev = document.getElementById('chart-prevalence');
+     var chart_prev = new Chart(ctx_prev, {
+         type: 'line',
+         data: {
+             labels: [],
+             datasets: [
+                 {
+                     name: "INFECT_RATE_ALIVE",
+                     label: 'Prevalence',
+                     data: [],
+                     borderColor: 'black',
+                     borderWidth: 1,
+                     fill: false
+                 }
+             ]
+         },
+         options: {
+             scales: {
+                 yAxes: [{
+                     ticks: {
+                         beginAtZero: true,
+                     }
+                 }],
+             },
+
+             tooltips: {
+                 callbacks: {
+                     label: function(tooltipItem, data) {
+                         var label = Number(tooltipItem.yLabel).toFixed(2);
+                         return label;
+                     }
+                 }
+             },
+         }
+     });
+
+     var ctx_pop = document.getElementById('chart-population');
+     var chart_pop = new Chart(ctx_pop, {
+         type: 'line',
+         data: {
+             labels: [],
+             datasets: [
+                 {
+                     name: "POP_ALIVE",
+                     label: 'Alive',
+                     data: [],
+                     borderColor: 'blue',
+                     borderWidth: 1,
+                     fill: false
+                 },
+                 {
+                     name: "POP_DEAD",
+                     label: 'Dead',
+                     data: [],
+                     borderColor: 'red',
+                     borderWidth: 1,
+                     fill: false
+                 }
+             ]
+         },
+         options: {
+             scales: {
+                 yAxes: [{
+                     ticks: {
+                         beginAtZero: true,
+                     }
+                 }],
+             },
+
+             tooltips: {
+                 callbacks: {
+                     label: function(tooltipItem, data) {
+                         var label = Number(tooltipItem.yLabel);
+                         return label;
+                     }
+                 }
+             },
+         }
+     });
 
 
      var setMessage = function(msg, tag) {
@@ -71,9 +251,31 @@
          }).then(function(dict) {
              setMessage(dict["msg"], dict["msgstatus"]);
              var ul = document.getElementById("output");
+             var saved_date = "";
              for (const line of dict["lines"]) {
                  ul.innerHTML += "<li>" + line + "</li>";
+                 var cells = line.split(";");
+                 if (saved_date != cells[3]) {
+                     saved_date = cells[3];
+                     console.log(saved_date);
+                     chart_prev.data.labels.push(saved_date);
+                     chart_pop.data.labels.push(saved_date);
+                 }
+                 chart_prev.data.datasets.forEach((dataset) => {
+                     if (dataset.name === cells[4]) {
+                         dataset.data.push(Number(cells[5]));
+                         console.log(cells[5]);
+                     }
+                 });
+                 chart_pop.data.datasets.forEach((dataset) => {
+                     if (dataset.name === cells[4]) {
+                         dataset.data.push(Number(cells[5]));
+                     }
+                 });
              }
+             chart_prev.update();
+             chart_pop.update();
+
              ul.scrollTop = ul.scrollHeight;
              if (dict["status"] == "idle") {
                  document.getElementById("simulate-button").disabled = false;
@@ -99,7 +301,46 @@
          } else {
              document.getElementById("simulate-button").disabled = false;
          }
+
+         // Add events to collapsible groups of form elements
+         var coll = document.getElementsByClassName("collapsible");
+         for (var i = 0; i < coll.length; i++) {
+             coll[i].addEventListener("click", function() {
+                 this.classList.toggle("active");
+                 var content = this.nextElementSibling;
+                 if (content.style.display === "block") {
+                     content.style.display = "none";
+                 } else {
+                     content.style.display = "block";
+                 }
+             });
+         }
+
+         // Add events for radio buttons choosing between file and form
+         var rb_div = document.getElementsByClassName("source-selector");
+         for (var i = 0; i < rb_div.length; i++) {
+             var rb = rb_div[i].getElementsByTagName('input')[0];
+             var form_parms = rb_div[i].parentNode.
+                                        getElementsByClassName('form-parms')[0];
+             var file_parms = rb_div[i].parentNode.
+                                        getElementsByClassName('file-parms')[0];
+             rb.addEventListener("change", function() {
+                 form_parms.style.display = "block";
+                 file_parms.style.display = "none";
+             });
+             rb = rb_div[i].getElementsByTagName('input')[1];
+             form_parms = rb_div[i].parentNode.
+                                    getElementsByClassName('form-parms')[0];
+             file_parms = rb_div[i].parentNode.
+                                    getElementsByClassName('file-parms')[0];
+             rb.addEventListener("change", function() {
+                 form_parms.style.display = "none";
+                 file_parms.style.display = "block";
+             });
+         }
+
      });
+
 
     </script>
 {% endblock %}

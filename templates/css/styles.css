@@ -68,3 +68,12 @@ body {
     margin-bottom: 4px;
     margin-top: 4px;
 }
+
+#chart-prevalence {
+    max-width: 45%;
+    max-height: 200px;
+}
+#chart-population {
+    max-width: 45%;
+    max-height: 200px;
+}
