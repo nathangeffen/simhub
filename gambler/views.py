@@ -15,7 +15,7 @@ class GamblerFormView(JobFormView):
     template_name = 'gambler/gambler_form.html'
     form_class = GamblerForm
 
-    def command_line(self, data, key):
+    def command_line(self, data, files, key):
         exe = os.path.join(settings.BASE_DIR,
                            'gambler/management/commands/sim_gamblers.py')
         amount = str(data['start_amount'])

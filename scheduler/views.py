@@ -262,13 +262,15 @@ class JobView:
         request.msgstatus = "running"
         duplicate = 0
 
-        form = form_cls(request.POST)
+        form = form_cls(request.POST, request.FILES)
         if form.is_valid():
             if request.session["status"] == "idle":
                 key = request.session["key"]
                 job = {}
                 job["key"] = key
-                job["command"] = view_cls.command_line(form.cleaned_data, key)
+                job["command"] = view_cls.command_line(form.cleaned_data,
+                                                       request.FILES,
+                                                       key)
                 try:
                     self._put_job_in_queue(job)
                     request.session["status"] = "running"
@@ -278,6 +280,9 @@ class JobView:
                                                     "Please try later.")
                 request.session["linesProcessed"] = 0
                 request.session["filePos"] = 0
+        else:
+            messages.add_message(request, messages.ERROR,
+                                 "Please fix the errors")
         data = {
             'form': form,
             'duplicate': duplicate
@@ -302,7 +307,7 @@ class JobFormView(JobView, FormView):
     def get_output_filename(self):
         return self._get_output_filename(self.request.session["key"])
 
-    def command_line(self, data=None, key=None):
+    def command_line(self, data=None, files=None, key=None):
         return []
 
     def get_context_data(self, **kwargs):
@@ -329,20 +334,23 @@ class JobJSONView(TemplateView):
             context['msgstatus'] = "error"
         elif fail is not None:
             self.request.session["status"] = context["status"] = "idle"
-            context['msg'] = _("Sorry, job failed.") + " " + (str(fail))
+            context['msg'] = _("Sorry, job failed.")
             context['msgstatus'] = "error"
+
+        with self.job_view_cls._proc_lock:
+            is_running = (key in self.job_view_cls._running)
+            is_finished = self.job_view_cls._job_queue[key]["finished"]
+        if is_running or is_finished:
+            prev_pos = self.request.session["filePos"]
+            context['lines'], self.request.session["filePos"] = \
+                self.job_view_cls._read_output_file(
+                    key, self.request.session["filePos"],
+                    self.lines_to_read)
         else:
-            with self.job_view_cls._proc_lock:
-                is_running = (key in self.job_view_cls._running)
-                is_finished = self.job_view_cls._job_queue[key]["finished"]
-            if is_running or is_finished:
-                prev_pos = self.request.session["filePos"]
-                context['lines'], self.request.session["filePos"] = \
-                    self.job_view_cls._read_output_file(
-                        key, self.request.session["filePos"],
-                        self.lines_to_read)
-            else:
-                self.request.session["filePos"] = prev_pos = 0
+            self.request.session["filePos"] = prev_pos = 0
+
+        if (fail is None) and \
+           (self.job_view_cls.is_timeout(key) is False):
             if is_finished and (prev_pos == self.request.session["filePos"]):
                 self.request.session["status"] = "idle"
                 self.request.session["filePos"] = 0

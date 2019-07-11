@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load faststi %}
+
 {% block title %}
     Fast agent-based model of sexually transmitted infections {{block.super}}
 {% endblock %}
@@ -23,89 +25,54 @@
         {% endif %}
     </ul>
 
-    <form id="sim-parameters" action="{% url 'faststi:faststi_form' %}"
+    <form id="sim-parameters"
+          enctype="multipart/form-data"
+          action="{% url 'faststi:faststi_form' %}"
           method="post">
         {% csrf_token %}
         {{ form.non_field_errors }}
-        <div id="simulation-basic">
+        {% for field in form|starts_with:"a_" %}
             <div class="fieldWrapper">
-                {{ form.num_agents.errors }}
-                {{ form.num_agents.label_tag }}
-                {{ form.num_agents }}
+                {{ field.errors }}
+                {{ field.label_tag }}
+                {{ field }}
             </div>
+        {% endfor %}
+        {% for field in form|starts_with:"c_" %}
             <div class="fieldWrapper">
-                {{ form.time_step.errors }}
-                {{ form.time_step.label_tag }}
-                {{ form.time_step }}
+                {{ field.errors }}
+                {{ field.label_tag }}
+                {{ field }}
             </div>
-            <div class="fieldWrapper">
-                {{ form.simulation_period.errors }}
-                {{ form.simulation_period.label_tag }}
-                {{ form.simulation_period }}
+        {% endfor %}
+
+
+        <button type="button" class="collapsible">
+            Initial infections
+        </button>
+
+        <div  class="content">
+            <div class="fieldWrapper source-selector">
+                {{ form.e0_initial_infections_data_source.errors }}
+                {{ form.e0_initial_infections_data_source.label_tag }}
+                {{ form.e0_initial_infections_data_source }}
             </div>
-            <div class="fieldWrapper">
-                {{ form.report_frequency.errors }}
-                {{ form.report_frequency.label_tag }}
-                {{ form.report_frequency }}
+            <div class="form-parms">
+                {% for field in form|starts_with:"e1_" %}
+                    <div class="fieldWrapper">
+                        {{ field.errors }}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {% endfor %}
             </div>
-            <div class="fieldWrapper">
-                {{ form.match_k.errors }}
-                {{ form.match_k.label_tag }}
-                {{ form.match_k }}
-            </div>
-            <button type="button" class="collapsible">
-                Initial infections
-            </button>
-            <div  class="content">
-                <div class="fieldWrapper source-selector">
-                    {{ form.initial_infections_data_source.errors }}
-                    {{ form.initial_infections_data_source.label_tag }}
-                    {{ form.initial_infections_data_source }}
-                </div>
-                <div class="form-parms" id="initial-infections-fields">
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_15_20.errors }}
-                        {{ form.initial_infections_msm_15_20.label_tag }}
-                        {{ form.initial_infections_msm_15_20 }}
-                    </div>
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_20_25.errors }}
-                        {{ form.initial_infections_msm_20_25.label_tag }}
-                        {{ form.initial_infections_msm_20_25 }}
-                    </div>
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_25_30.errors }}
-                        {{ form.initial_infections_msm_25_30.label_tag }}
-                        {{ form.initial_infections_msm_25_30 }}
-                    </div>
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_30_35.errors }}
-                        {{ form.initial_infections_msm_30_35.label_tag }}
-                        {{ form.initial_infections_msm_30_35 }}
-                    </div>
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_35_40.errors }}
-                        {{ form.initial_infections_msm_35_40.label_tag }}
-                        {{ form.initial_infections_msm_35_40 }}
-                    </div>
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_40_45.errors }}
-                        {{ form.initial_infections_msm_40_45.label_tag }}
-                        {{ form.initial_infections_msm_40_45 }}
-                    </div>
-                    <div class="fieldWrapper">
-                        {{ form.initial_infections_msm_45_50.errors }}
-                        {{ form.initial_infections_msm_45_50.label_tag }}
-                        {{ form.initial_infections_msm_45_50 }}
-                    </div>
-                </div>
-                <div class="fieldWrapper file-parms">
-                    {{ form.initial_infections_file.errors }}
-                    {{ form.initial_infections_file.label_tag }}
-                    {{ form.initial_infections_file }}
-                </div>
+            <div class="fieldWrapper file-parms">
+                {{ form.e2_initial_infections_file.errors }}
+                {{ form.e2_initial_infections_file.label_tag }}
+                {{ form.e2_initial_infections_file }}
             </div>
         </div>
+
         <input id="simulate-button" type="submit" value="Simulate">
     </form>
 
@@ -324,6 +291,13 @@
                                         getElementsByClassName('form-parms')[0];
              var file_parms = rb_div[i].parentNode.
                                         getElementsByClassName('file-parms')[0];
+             if (rb.checked) {
+                 form_parms.style.display = "block";
+                 file_parms.style.display = "none";
+             } else {
+                 form_parms.style.display = "none";
+                 file_parms.style.display = "block";
+             }
              rb.addEventListener("change", function() {
                  form_parms.style.display = "block";
                  file_parms.style.display = "none";
@@ -338,7 +312,6 @@
                  file_parms.style.display = "block";
              });
          }
-
      });
 
 

@@ -19,23 +19,24 @@ body {
 }
 
 #messages li.success {
-    color: #4F8A10;
     background-color: #DFF2BF;
 }
 
 #messages li.info {
-    color: #00529B;
     background-color: #BDE5F8;
 }
 
 #messages li.warning {
-    color: #9F6000;
     background-color: #FEEFB3;
 }
 
 #messages li.error {
-    color: #D8000C;
     background-color: #FFD2D2;
+}
+
+.errorlist li {
+    list-style: none;
+    color: #D8000C;
 }
 
 #sim-parameters label {
