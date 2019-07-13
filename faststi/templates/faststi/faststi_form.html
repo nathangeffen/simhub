@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% load faststi %}
 
 {% block title %}
@@ -9,7 +9,7 @@
 {% block styles %}
     {{block.super}}
     <style>
-        {% include "faststi/faststi.css" %}
+     {% include "faststi/faststi.css" %}
     </style>
 {% endblock %}
 
@@ -47,31 +47,62 @@
         {% endfor %}
 
 
-        <button type="button" class="collapsible">
-            Initial infections
-        </button>
-
-        <div  class="content">
-            <div class="fieldWrapper source-selector">
-                {{ form.e0_initial_infections_data_source.errors }}
-                {{ form.e0_initial_infections_data_source.label_tag }}
-                {{ form.e0_initial_infections_data_source }}
-            </div>
-            <div class="form-parms">
-                {% for field in form|starts_with:"e1_" %}
-                    <div class="fieldWrapper">
-                        {{ field.errors }}
-                        {{ field.label_tag }}
-                        {{ field }}
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="fieldWrapper file-parms">
-                {{ form.e2_initial_infections_file.errors }}
-                {{ form.e2_initial_infections_file.label_tag }}
-                {{ form.e2_initial_infections_file }}
+        <div id="initial-infections" class="collapsible">
+            <p class="collapsible-description">
+                <span class="collapsible-description-plus">+</span>
+                Initial infections
+            </p>
+            <div class="content">
+                <div class="fieldWrapper source-selector">
+                    {{ form.e0_initial_infections_data_source.errors }}
+                    {{ form.e0_initial_infections_data_source.label_tag }}
+                    {{ form.e0_initial_infections_data_source }}
+                </div>
+                <div class="form-parms">
+                    {% for field in form|starts_with:"e1_" %}
+                        <div class="fieldWrapper">
+                            {{ field.errors }}
+                            {{ field.label_tag }}
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="fieldWrapper file-parms">
+                    {{ form.e2_initial_infections_file.errors }}
+                    {{ form.e2_initial_infections_file.label_tag }}
+                    {{ form.e2_initial_infections_file }}
+                </div>
             </div>
         </div>
+
+        <div id="mortality" class="collapsible">
+            <p class="collapsible-description">
+                <span class="collapsible-description-plus">+</span>
+                Mortality
+            </p>
+            <div  class="content">
+                <div class="fieldWrapper source-selector">
+                    {{ form.h0_mortality_data_source.errors }}
+                    {{ form.h0_mortality_data_source.label_tag }}
+                    {{ form.h0_mortality_data_source }}
+                </div>
+                <div class="form-parms">
+                    {% for field in form|starts_with:"h1_" %}
+                        <div class="fieldWrapper">
+                            {{ field.errors }}
+                            {{ field.label_tag }}
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="fieldWrapper file-parms">
+                    {{ form.h2_mortality_file.errors }}
+                    {{ form.h2_mortality_file.label_tag }}
+                    {{ form.h2_mortality_file }}
+                </div>
+            </div>
+        </div>
+
 
         <input id="simulate-button" type="submit" value="Simulate">
     </form>
@@ -85,7 +116,36 @@
 
 
     <ol id="output">
+        <p>Configuration file:
+            <span id="config-filename">
+                <a href="{% url "faststi:faststi_config" config_filename %}">
+                    {{config_filename}}
+                </a>
+            </span>
+        </p>
+        <p>Initial infection dataset:
+            <span id="initial-infection-filename">
+                <a href="{% url "faststi:faststi_data" initial_infection_filename %}">
+                    {{initial_infection_filename}}
+                </a>
+            </span>
+        </p>
+        <p>Mortality dataset:
+            <span id="mortality-filename">
+                <a href="{% url "faststi:faststi_data" mortality_filename %}">
+                    {{mortality_filename}}
+                </a>
+            </span>
+        </p>
 
+        <p>Output file:
+            <span id="output-filename">
+                <a href="{% url "faststi:faststi_output" output_filename %}">
+                    {{output_filename}}
+                </a>
+            </span>
+        </p>
+        <h2>Simulation output</h2>
     </ol>
 
     {{ status }}
@@ -96,7 +156,7 @@
 
     <script>
      "use strict";
-     var timeout = 1000;
+     var timeout = 300;
 
      var getCookie = function(name) {
          var cookieValue = null;
@@ -272,15 +332,53 @@
          // Add events to collapsible groups of form elements
          var coll = document.getElementsByClassName("collapsible");
          for (var i = 0; i < coll.length; i++) {
-             coll[i].addEventListener("click", function() {
-                 this.classList.toggle("active");
-                 var content = this.nextElementSibling;
-                 if (content.style.display === "block") {
-                     content.style.display = "none";
+             var button = coll[i].getElementsByClassName(
+                 "collapsible-description")[0];
+             button.addEventListener("click", function() {
+                 var content = this.parentElement.
+                                    getElementsByClassName("content")[0];
+                 var plus = this.parentElement.getElementsByClassName(
+                     "collapsible-description-plus")[0];
+                 console.log(content.style.maxHeight);
+                 if (content.style.maxHeight != "") {
+                     content.style.maxHeight = null;
+                     content.style.padding = "0";
+                     plus.textContent = "+";
                  } else {
-                     content.style.display = "block";
+                     content.style.maxHeight = content.scrollHeight + "px";
+                     content.style.padding = "12px";
+                     plus.textContent = "-";
+
                  }
              });
+         }
+
+         var uninfected = document.getElementsByClassName("uninfected");
+         for (var e of uninfected) {
+             if (getComputedStyle(e, null).display != "none") {
+                 var text = document.createTextNode('{% trans "Uninfected" %}');
+                 e.parentNode.insertBefore(text, e);
+             }
+         }
+         var treated = document.getElementsByClassName("treated");
+         for (var e of treated) {
+             var text = document.createTextNode('{% trans "Treated" %}');
+             e.parentNode.insertBefore(text, e);
+         }
+         var primary = document.getElementsByClassName("primary");
+         for (var e of primary) {
+             var text = document.createTextNode('{% trans "Primary" %}');
+             e.parentNode.insertBefore(text, e);
+         }
+         var chronic = document.getElementsByClassName("chronic");
+         for (var e of chronic) {
+             var text = document.createTextNode('{% trans "Chronic" %}');
+             e.parentNode.insertBefore(text, e);
+         }
+         var final = document.getElementsByClassName("final");
+         for (var e of final) {
+             var text = document.createTextNode('{% trans "Final" %}');
+             e.parentNode.insertBefore(text, e);
          }
 
          // Add events for radio buttons choosing between file and form

@@ -1,26 +1,29 @@
- /* Style the button that is used to open and close the collapsible content */
+
 .collapsible {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
+    max-width: 80%;
+    background-color: #eee;
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 12pt;
+    margin-bottom: 12px;
 }
 
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .collapsible:hover {
-  background-color: #ccc;
+.collapsible p.collapsible-description {
+    padding: 12px;
+}
+.collapsible p.collapsible-description:hover {
+    text-decoration: underline;
 }
 
-/* Style the collapsible content. Note: hidden by default */
 .content {
-  padding: 0 18px;
-  display: none;
-  overflow: hidden;
-  background-color: #f1f1f1;
+    padding: 0;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s linear;
 }
 
 .source-selector ul {
@@ -43,4 +46,22 @@
 
 #simulate-button {
     margin-top: 12px;
+}
+
+.fieldWrapper input[type="number"] {
+    width: 4.5em;
+    margin-left: 3px;
+    margin-right: 6px;
+}
+
+.source-selector ul {
+    display: inline;
+}
+
+.source-selector input {
+    width: 1em;
+}
+
+#initial-infections input.uninfected {
+    display: none;
 }

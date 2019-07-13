@@ -34,7 +34,11 @@ body {
     background-color: #FFD2D2;
 }
 
+ul.errorlist {
+    padding: 0;
+}
 .errorlist li {
+    padding: 0;
     list-style: none;
     color: #D8000C;
 }

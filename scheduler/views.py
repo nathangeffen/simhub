@@ -30,6 +30,7 @@ logger = logging.getLogger("scheduler")
 class DictActions(Enum):
     GET = 1
     DEL = 2
+    REMOVE = 3
 
 
 class JobView:
@@ -68,6 +69,11 @@ class JobView:
                         f.close()
                         del self._open_files[filename]
                 except (IOError, KeyError) as e:
+                    logger.error(e)
+            elif action == DictActions.REMOVE:
+                try:
+                    os.remove(filename)
+                except IOError as e:
                     logger.error(e)
         return result
 
@@ -253,7 +259,8 @@ class JobView:
             request.session["status"] = "idle"
         data = {
             'form': form,
-            'duplicate': duplicate
+            'duplicate': duplicate,
+            'key': request.session["key"]
         }
         return data
 
@@ -272,6 +279,7 @@ class JobView:
                                                        request.FILES,
                                                        key)
                 try:
+                    self._open_files_action(key, DictActions.REMOVE)
                     self._put_job_in_queue(job)
                     request.session["status"] = "running"
                 except QueueFull:
@@ -285,7 +293,8 @@ class JobView:
                                  "Please fix the errors")
         data = {
             'form': form,
-            'duplicate': duplicate
+            'duplicate': duplicate,
+            'key': request.session["key"]
         }
         return data
 
@@ -298,6 +307,7 @@ class JobView:
             data = self.context_data_post(request, form_cls, view_cls)
         context['form'] = data['form']
         context['duplicate'] = data['duplicate']
+        context['key'] = data['key']
         return context
 
 
