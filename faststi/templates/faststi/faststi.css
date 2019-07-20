@@ -1,30 +1,76 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
-.collapsible {
-    max-width: 80%;
-    background-color: #eee;
-    cursor: pointer;
-    text-align: left;
-    outline: none;
-    border: 1px solid black;
-    border-radius: 5px;
-    font-size: 12pt;
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 18px;
+    font-family: "Arial Black", Gadget, sans-serif;
+}
+
+p.intro {
+    width: 80%;
+    max-width: 560px;
+}
+
+#sim-parameters {
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-top: 12px;
     margin-bottom: 12px;
 }
 
-.collapsible p.collapsible-description {
-    padding: 12px;
-}
-.collapsible p.collapsible-description:hover {
-    text-decoration: underline;
+.fieldWrapper {
+    margin-bottom: 6px;
+    margin-left: 3px;
+    padding: 6px 6px 0 0;
+    font-size: 12px;
 }
 
-.content {
-    padding: 0;
-    background-color: white;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s linear;
+legend {
+    font-size: 12px;
 }
+
+.tab-selector {
+    text-align: center;
+    height: 30px;
+    width: 70px;
+    background-color: black;
+    color: white;
+    margin-left: 0;
+    margin-right: 2px;
+    border: none;
+    text-decoration: none;
+    outline: none;
+}
+
+.tab-selector:hover {
+    background-color: lightgray;
+    color: black;
+    cursor: pointer;
+    outline: none;
+}
+
+.selected {
+    background-color: red;
+    border: none;
+    outline: none;
+}
+
+.tabbed {
+    display: none;
+    max-width: 630px;
+}
+
 
 .source-selector ul {
     list-style: none;
@@ -45,13 +91,56 @@
 }
 
 #simulate-button {
-    margin-top: 12px;
+/*    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #44c767), color-stop(1, #5cbf2a));
+    background:-moz-linear-gradient(top, #44c767 5%, #5cbf2a 100%);
+    background:-webkit-linear-gradient(top, #44c767 5%, #5cbf2a 100%);
+    background:-o-linear-gradient(top, #44c767 5%, #5cbf2a 100%);
+    background:-ms-linear-gradient(top, #44c767 5%, #5cbf2a 100%);
+    background:linear-gradient(to bottom, #44c767 5%, #5cbf2a 100%);
+    background-color:#44c767;
+*/
+    -moz-border-radius:19px;
+    -webkit-border-radius:19px;
+    border-radius:19px;
+    border:5px solid black;
+    display:inline-block;
+    cursor:pointer;
+    /* color:#ffffff;*/
+    font-family:Arial;
+    font-size:21px;
+    font-weight:bold;
+    padding:19px 56px;
+    text-decoration:none;
+    text-shadow:1px 1px 0px #2f6627;
+    margin: 12px;
+}
+
+#simulate-button:hover {
+  /*  background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #5cbf2a), color-stop(1, #44c767));
+    background:-moz-linear-gradient(top, #5cbf2a 5%, #44c767 100%);
+    background:-webkit-linear-gradient(top, #5cbf2a 5%, #44c767 100%);
+    background:-o-linear-gradient(top, #5cbf2a 5%, #44c767 100%);
+    background:-ms-linear-gradient(top, #5cbf2a 5%, #44c767 100%);
+    background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
+    background-color:#5cbf2a;
+ */
+    text-decoration: underline;
+}
+
+#simulate-button:active {
+    position:relative;
+    top:1px;
+}
+
+#sim-parameters input {
+    margin-bottom: 0;
 }
 
 .fieldWrapper input[type="number"] {
     width: 4.5em;
     margin-left: 3px;
     margin-right: 6px;
+    margin-bottom: 0px;
 }
 
 .source-selector ul {
@@ -62,6 +151,46 @@
     width: 1em;
 }
 
-#initial-infections input.uninfected {
+#initial-infections input.uninfected,
+#infectiousness input.uninfected {
     display: none;
+}
+
+#advanced {
+    margin-top: 9px;
+    padding-top: 6px;
+    padding-left: 6px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+#charts {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 6px;
+}
+
+@media only screen and (min-width: 700px) {
+    #charts {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #chart-prevalence,
+    #chart-population {
+        flex: auto;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    #chart-prevalence,
+    #chart-population {
+        width: 100;
+    }
+}
+
+#output {
+    background-color: white;
+    color: black;
+    padding-left: 22px;
 }

@@ -73,6 +73,8 @@ class JobView:
             elif action == DictActions.REMOVE:
                 try:
                     os.remove(filename)
+                except FileNotFoundError:
+                    pass
                 except IOError as e:
                     logger.error(e)
         return result

@@ -25,6 +25,16 @@
         {% endif %}
     </ul>
 
+    <h1>FastSTI: Fast agent-based simulation of epidemics</h1>
+    <p class="intro">
+        This is only a demonstration. We've had to limit what you can do because
+        we don't want to break the Internet (or at least our host's server). To
+        explore the full potential of FastSTI you'll want to run it on your own
+        computer (or a high-performance one that you have access to). The
+        <a href="https://faststi.readthedocs.io/en/latest/">documentation</a>
+        explains how.
+    </p>
+
     <form id="sim-parameters"
           enctype="multipart/form-data"
           action="{% url 'faststi:faststi_form' %}"
@@ -38,22 +48,27 @@
                 {{ field }}
             </div>
         {% endfor %}
-        {% for field in form|starts_with:"c_" %}
-            <div class="fieldWrapper">
-                {{ field.errors }}
-                {{ field.label_tag }}
-                {{ field }}
-            </div>
-        {% endfor %}
-
-
-        <div id="initial-infections" class="collapsible">
-            <p class="collapsible-description">
-                <span class="collapsible-description-plus">+</span>
-                Initial infections
+        <fieldset id="advanced">
+            <legend>Advanced parameters</legend>
+            <p class="tab-buttons">
+                <button type="button"
+                        onclick="openCloseTab(this, 'initial-infections')"
+                        class="tab-selector">Initial
+                </button><button
+                             type="button"
+                             onclick="openCloseTab(this, 'infectiousness')"
+                             class="tab-selector">Infect
+                </button><button type="button"
+                                 onclick="openCloseTab(this, 'mortality')"
+                                 class="tab-selector">Mortality
+                </button><button type="button"
+                                 onclick="openCloseTab(this, 'misc')"
+                                 class="tab-selector">Misc</button>
             </p>
-            <div class="content">
-                <div class="fieldWrapper source-selector">
+
+            <div id="initial-infections" class="tabbed">
+                <div class="fieldWrapper source-selector"
+                     onclick="switchFormFile(this)">
                     {{ form.e0_initial_infections_data_source.errors }}
                     {{ form.e0_initial_infections_data_source.label_tag }}
                     {{ form.e0_initial_infections_data_source }}
@@ -73,15 +88,33 @@
                     {{ form.e2_initial_infections_file }}
                 </div>
             </div>
-        </div>
 
-        <div id="mortality" class="collapsible">
-            <p class="collapsible-description">
-                <span class="collapsible-description-plus">+</span>
-                Mortality
-            </p>
-            <div  class="content">
-                <div class="fieldWrapper source-selector">
+            <div id="infectiousness" class="tabbed">
+                <div class="fieldWrapper source-selector"
+                     onclick="switchFormFile(this)">
+                    {{ form.k0_infectiousness_data_source.errors }}
+                    {{ form.k0_infectiousness_data_source.label_tag }}
+                    {{ form.k0_infectiousness_data_source }}
+                </div>
+                <div class="form-parms">
+                    {% for field in form|starts_with:"k1_" %}
+                        <div class="fieldWrapper">
+                            {{ field.errors }}
+                            {{ field.label_tag }}
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="fieldWrapper file-parms">
+                    {{ form.k2_infectiousness_file.errors }}
+                    {{ form.k2_infectiousness_file.label_tag }}
+                    {{ form.k2_infectiousness_file }}
+                </div>
+            </div>
+
+            <div id="mortality" class="tabbed">
+                <div class="fieldWrapper source-selector"
+                     onclick="switchFormFile(this)">
                     {{ form.h0_mortality_data_source.errors }}
                     {{ form.h0_mortality_data_source.label_tag }}
                     {{ form.h0_mortality_data_source }}
@@ -101,11 +134,22 @@
                     {{ form.h2_mortality_file }}
                 </div>
             </div>
-        </div>
 
+            <div id="misc" class="tabbed">
+                {% for field in form|starts_with:"c_" %}
+                    <div class="fieldWrapper">
+                        {{ field.errors }}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {% endfor %}
+            </div>
+
+        </fieldset>
 
         <input id="simulate-button" type="submit" value="Simulate">
     </form>
+
 
     <div id="charts">
         <canvas id="chart-prevalence">
@@ -114,39 +158,57 @@
         </canvas>
     </div>
 
+    <h2>Output</h2>
 
     <ol id="output">
-        <p>Configuration file:
-            <span id="config-filename">
-                <a href="{% url "faststi:faststi_config" config_filename %}">
-                    {{config_filename}}
-                </a>
-            </span>
-        </p>
-        <p>Initial infection dataset:
-            <span id="initial-infection-filename">
-                <a href="{% url "faststi:faststi_data" initial_infection_filename %}">
-                    {{initial_infection_filename}}
-                </a>
-            </span>
-        </p>
-        <p>Mortality dataset:
-            <span id="mortality-filename">
-                <a href="{% url "faststi:faststi_data" mortality_filename %}">
-                    {{mortality_filename}}
-                </a>
-            </span>
-        </p>
 
-        <p>Output file:
-            <span id="output-filename">
-                <a href="{% url "faststi:faststi_output" output_filename %}">
-                    {{output_filename}}
-                </a>
-            </span>
-        </p>
-        <h2>Simulation output</h2>
     </ol>
+
+    {% if config_files %}
+        <div id="filenames">
+            <p>Configuration file:
+                <span id="config-filename">
+                    <a href="{% url "faststi:faststi_config" config_filename %}"
+                       target="_blank">
+                        {{config_filename}}
+                    </a>
+                </span>
+            </p>
+            <p>Initial infection dataset:
+                <span id="initial-infection-filename">
+                    <a href="{% url "faststi:faststi_data" initial_infection_filename %}"
+                       target="_blank">
+                        {{initial_infection_filename}}
+                    </a>
+                </span>
+            </p>
+            <p>Mortality dataset:
+                <span id="mortality-filename">
+                    <a href="{% url "faststi:faststi_data" mortality_filename %}"
+                       target="_blank">
+                        {{mortality_filename}}
+                    </a>
+                </span>
+            </p>
+            <p>Infectiousness dataset:
+                <span id="infect-filename">
+                    <a href="{% url "faststi:faststi_data" infectiousness_filename %}"
+                       target="_blank">
+                        {{infectiousness_filename}}
+                    </a>
+                </span>
+            </p>
+
+            <p>Output file:
+                <span id="output-filename">
+                    <a href="{% url "faststi:faststi_output" output_filename %}"
+                       target="_blank">
+                        {{output_filename}}
+                    </a>
+                </span>
+            </p>
+        </div>
+    {% endif %}
 
     {{ status }}
 
@@ -320,6 +382,42 @@
          });
      }
 
+     // Tabbed parameter values
+
+     var openCloseTab = function(elem, parmId) {
+         if (elem.classList.contains("selected")) {
+             elem.classList.remove("selected");
+             document.getElementById(parmId).style.display = "none";
+         } else {
+             for (var t of document.getElementsByClassName("tab-selector")) {
+                 t.classList.remove("selected");
+             }
+             elem.classList.add("selected");
+             var parms = document.getElementsByClassName("tabbed");
+             for (var i = 0; i < parms.length; i++) {
+                 parms[i].style.display = "none";
+             }
+             document.getElementById(parmId).style.display = "block";
+         }
+     }
+
+     // Radio buttons function
+
+     var switchFormFile = function(elem) {
+         var form_parms = elem.parentNode.
+                               getElementsByClassName("form-parms")[0];
+         var file_parms = elem.parentNode.
+                               getElementsByClassName("file-parms")[0];
+         var options = elem.getElementsByTagName("INPUT");
+         if (options[0].checked) {
+             form_parms.style.display = "block";
+             file_parms.style.display = "none";
+         } else {
+             form_parms.style.display = "none";
+             file_parms.style.display = "block";
+         }
+     };
+
      window.addEventListener("load", function() {
          var csrftoken = getCookie('csrftoken');
          if ("{{request.session.status}}" == "running") {
@@ -327,30 +425,6 @@
              if ({{duplicate}} == 0) setTimeout(getOutput, timeout);
          } else {
              document.getElementById("simulate-button").disabled = false;
-         }
-
-         // Add events to collapsible groups of form elements
-         var coll = document.getElementsByClassName("collapsible");
-         for (var i = 0; i < coll.length; i++) {
-             var button = coll[i].getElementsByClassName(
-                 "collapsible-description")[0];
-             button.addEventListener("click", function() {
-                 var content = this.parentElement.
-                                    getElementsByClassName("content")[0];
-                 var plus = this.parentElement.getElementsByClassName(
-                     "collapsible-description-plus")[0];
-                 console.log(content.style.maxHeight);
-                 if (content.style.maxHeight != "") {
-                     content.style.maxHeight = null;
-                     content.style.padding = "0";
-                     plus.textContent = "+";
-                 } else {
-                     content.style.maxHeight = content.scrollHeight + "px";
-                     content.style.padding = "12px";
-                     plus.textContent = "-";
-
-                 }
-             });
          }
 
          var uninfected = document.getElementsByClassName("uninfected");
@@ -381,34 +455,8 @@
              e.parentNode.insertBefore(text, e);
          }
 
-         // Add events for radio buttons choosing between file and form
-         var rb_div = document.getElementsByClassName("source-selector");
-         for (var i = 0; i < rb_div.length; i++) {
-             var rb = rb_div[i].getElementsByTagName('input')[0];
-             var form_parms = rb_div[i].parentNode.
-                                        getElementsByClassName('form-parms')[0];
-             var file_parms = rb_div[i].parentNode.
-                                        getElementsByClassName('file-parms')[0];
-             if (rb.checked) {
-                 form_parms.style.display = "block";
-                 file_parms.style.display = "none";
-             } else {
-                 form_parms.style.display = "none";
-                 file_parms.style.display = "block";
-             }
-             rb.addEventListener("change", function() {
-                 form_parms.style.display = "block";
-                 file_parms.style.display = "none";
-             });
-             rb = rb_div[i].getElementsByTagName('input')[1];
-             form_parms = rb_div[i].parentNode.
-                                    getElementsByClassName('form-parms')[0];
-             file_parms = rb_div[i].parentNode.
-                                    getElementsByClassName('file-parms')[0];
-             rb.addEventListener("change", function() {
-                 form_parms.style.display = "none";
-                 file_parms.style.display = "block";
-             });
+         for (var elem of document.getElementsByClassName("source-selector")) {
+             switchFormFile(elem);
          }
      });
 

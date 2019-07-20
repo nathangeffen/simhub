@@ -69,6 +69,26 @@ class FaststiFormView(JobFormView):
                 f"{fields[i][3]};{fields[i][4]}\n")
             j = j + 1
 
+    def _write_mortality(self, f, fields):
+        f.write("infected;age|5-YEAR;sex;prob\n")
+        for i in range(5):
+            f.write(f"{i};0;0;0.0\n"
+                    f"{i};0;1;0.0\n"
+                    f"{i};1;0;0.0\n"
+                    f"{i};1;1;0.0\n"
+                    f"{i};2;0;0.0\n"
+                    f"{i};2;1;0.0\n")
+            for j in range(3,10):
+                for k in range(0,2):
+                    f.write(f"{i};{j};{k};{fields[(j-3)*(k+1)][i]}\n")
+
+    def _write_infect(self, f, fields):
+        f.write("sex;sex|1|~;infected;0\n")
+        l = 0
+        for i in range(2):
+            for j in range(2):
+                for k in range(5):
+                    f.write(f"{i};{j};{k};{fields[i*2+j][k]}\n")
 
     def _write_boiler_plate_config(self, f, key):
         f.write(
@@ -82,9 +102,7 @@ class FaststiFormView(JobFormView):
             "dataset_birth_resistant=dataset_birth_resistant.csv\n"
             "dataset_rel_period=dataset_rel.csv\n"
             "dataset_single_period=dataset_single.csv\n"
-            "dataset_infect=dataset_infect.csv\n"
             "dataset_infect_stage=dataset_infect_stage.csv\n"
-            "dataset_mortality=dataset_mortality_simple.csv\n"
             "before_events=_write_results_csv_header;"
             "_generate_and_pair\n"
             "during_events=_age;_breakup_and_pair;_infect;_stage;"
@@ -96,7 +114,9 @@ class FaststiFormView(JobFormView):
 
     def run(self, command, key=None):
         strings = ["INITIAL_INFECTIONS", "POP_ALIVE",
-                   "INFECT_RATE_ALIVE", "POP_DEAD", ]
+                   "INFECT_RATE_ALIVE", "POP_DEAD", "INFECT_RATE_DEAD",
+                   "SIMULATION_INFECTIONS",
+                   "name;sim;num;date;description;value"]
         strings = "|".join(strings)
         grep_cmd = ["grep", "-E", strings]
         try:
@@ -124,6 +144,9 @@ class FaststiFormView(JobFormView):
     def _mortality_filename(self, key):
         return os.path.join(DATA_DIR, f"mortality_{key}.csv")
 
+    def _infect_filename(self, key):
+        return os.path.join(DATA_DIR, f"infect_{key}.csv")
+
     def write_config_file(self, data, files, key):
         filename = self._config_filename(key)
 
@@ -138,6 +161,29 @@ class FaststiFormView(JobFormView):
             handle_uploaded_file(files["e2_initial_infections_file"],
                                  initial_infections_filename)
 
+        # Write mortality file
+        mortality_filename = self._mortality_filename(key)
+
+        if data["h0_mortality_data_source"] == "form":
+            fields = [data[k] for k in data if k.startswith("h1_")]
+            with open(mortality_filename, 'w') as f:
+                self._write_mortality(f, fields)
+        else:
+            handle_uploaded_file(files["h2_mortality_file"],
+                                 mortality_filename)
+
+        # Write infectiousness file
+        infect_filename = self._infect_filename(key)
+
+        if data["k0_infectiousness_data_source"] == "form":
+            fields = [data[k] for k in data if k.startswith("k1_")]
+            with open(infect_filename, 'w') as f:
+                self._write_infect(f, fields)
+        else:
+            handle_uploaded_file(files["k2_infectiousness_file"],
+                                 infect_filename)
+
+
         with open(filename, 'w') as f:
             f.write("[Simulation 1]\n")
 
@@ -148,12 +194,18 @@ class FaststiFormView(JobFormView):
                     val = f'{data[k]} days'
                 elif k == "a_simulation_period":
                     val = f'{data[k]} years'
+                elif k == "c_start_date":
+                    val = f"{data['c_start_date'].year};{data['c_start_date'].month};{data['c_start_date'].day}"
                 else:
                     val = data[k]
                 o = k[k.find("_")+1:] # Remove identifying prefix
                 f.write(f'{o} = {val}\n')
             init_inf_file_suf = Path(self._initial_infections_filename(key)).name
             f.write(f"dataset_gen_infect = {init_inf_file_suf}\n")
+            mortality_file_suf = Path(self._mortality_filename(key)).name
+            f.write(f"dataset_mortality = {mortality_file_suf}\n")
+            infect_file_suf = Path(self._infect_filename(key)).name
+            f.write(f"dataset_infect = {infect_file_suf}\n")
             self._write_boiler_plate_config(f, key)
         return filename
 
@@ -162,14 +214,21 @@ class FaststiFormView(JobFormView):
         exe = os.path.join(EXE_DIR, EXE_NAME)
         return [exe, "-f", config, ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def context_data(self, request, context, **kwargs):
+        context = super().context_data(request, context, **kwargs)
         key = context['key']
-        context['config_filename'] = Path(self._config_filename(key)).name
-        context['initial_infection_filename'] = \
+        if request.method == "POST":
+            context['config_files'] = True
+            context['config_filename'] = \
+                        Path(self._config_filename(key)).name
+            context['initial_infection_filename'] = \
                         Path(self._initial_infections_filename(key)).name
-        context['mortality_filename'] = Path(self._mortality_filename(key)).name
-        context['output_filename'] = Path(self._get_output_filename(key)).name
+            context['mortality_filename'] = \
+                        Path(self._mortality_filename(key)).name
+            context['infectiousness_filename'] = \
+                        Path(self._infect_filename(key)).name
+            context['output_filename'] = \
+                        Path(self._get_output_filename(key)).name
         return context
 
 
