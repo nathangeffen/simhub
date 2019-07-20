@@ -104,10 +104,10 @@ class FaststiFormView(JobFormView):
             "dataset_single_period=dataset_single.csv\n"
             "dataset_infect_stage=dataset_infect_stage.csv\n"
             "before_events=_write_results_csv_header;"
-            "_generate_and_pair\n"
+            "_generate_and_pair;_report\n"
             "during_events=_age;_breakup_and_pair;_infect;_stage;"
             "_birth;_death;_report\n"
-            "after_events=_no_op\n")
+            "after_events=_report\n")
 
     def post_process(self, dict):
         return super().post_process(dict)

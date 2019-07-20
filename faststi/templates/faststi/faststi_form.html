@@ -344,23 +344,23 @@
              for (const line of dict["lines"]) {
                  ul.innerHTML += "<li>" + line + "</li>";
                  var cells = line.split(";");
-                 if (saved_date != cells[3]) {
-                     saved_date = cells[3];
-                     console.log(saved_date);
-                     chart_prev.data.labels.push(saved_date);
-                     chart_pop.data.labels.push(saved_date);
+                 if (cells[3] != "date") {
+                     if (saved_date != cells[3]) {
+                         saved_date = cells[3];
+                         chart_prev.data.labels.push(saved_date);
+                         chart_pop.data.labels.push(saved_date);
+                     }
+                     chart_prev.data.datasets.forEach((dataset) => {
+                         if (dataset.name === cells[4]) {
+                             dataset.data.push(Number(cells[5]));
+                         }
+                     });
+                     chart_pop.data.datasets.forEach((dataset) => {
+                         if (dataset.name === cells[4]) {
+                             dataset.data.push(Number(cells[5]));
+                         }
+                     });
                  }
-                 chart_prev.data.datasets.forEach((dataset) => {
-                     if (dataset.name === cells[4]) {
-                         dataset.data.push(Number(cells[5]));
-                         console.log(cells[5]);
-                     }
-                 });
-                 chart_pop.data.datasets.forEach((dataset) => {
-                     if (dataset.name === cells[4]) {
-                         dataset.data.push(Number(cells[5]));
-                     }
-                 });
              }
              chart_prev.update();
              chart_pop.update();

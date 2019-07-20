@@ -101,7 +101,7 @@ class FaststiForm(forms.Form):
     a_report_frequency = forms.IntegerField(label=_("Report every how "
                                                     "many iterations"),
                                             min_value=1, max_value=20000,
-                                            initial=10)
+                                            initial=100)
     c_start_date = forms.DateField(label=_("Start date"),
                                    widget=forms.SelectDateWidget(),
                                    initial=timezone.datetime(2018,1,1))
