@@ -1,6 +1,7 @@
 #!python3
 
-from django.core.management.base import BaseCommand
+if __name__ != '__main__':
+    from django.core.management.base import BaseCommand
 import random
 import sys
 
@@ -35,22 +36,23 @@ def simulate(startAmount, numTests, numGambles, numPlayers,
     print("Casino total: ", total, "Casino wins: ", wins, file=outputFile)
 
 
-class Command(BaseCommand):
-    help = 'Runs the gambling simulation'
-    START_AMOUNT = 10
-    NUM_TESTS = 5000
-    NUM_GAMBLES = 100000
-    NUM_PLAYERS = 10
+if __name__ != '__main__':
+    class Command(BaseCommand):
+        help = 'Runs the gambling simulation'
+        START_AMOUNT = 10
+        NUM_TESTS = 5000
+        NUM_GAMBLES = 100000
+        NUM_PLAYERS = 10
 
-    def add_arguments(self, parser):
-        parser.add_argument('--amount', type=int, default=self.START_AMOUNT)
-        parser.add_argument('--runs', type=int, default=self.NUM_TESTS)
-        parser.add_argument('--gambles', type=int, default=self.NUM_GAMBLES)
-        parser.add_argument('--players', type=int, default=self.NUM_PLAYERS)
+        def add_arguments(self, parser):
+            parser.add_argument('--amount', type=int, default=self.START_AMOUNT)
+            parser.add_argument('--runs', type=int, default=self.NUM_TESTS)
+            parser.add_argument('--gambles', type=int, default=self.NUM_GAMBLES)
+            parser.add_argument('--players', type=int, default=self.NUM_PLAYERS)
 
-    def handle(self, *args, **options):
-        simulate(options['amount'], options['runs'],
-                 options['gambles'], options['players'])
+        def handle(self, *args, **options):
+            simulate(options['amount'], options['runs'],
+                     options['gambles'], options['players'])
 
 
 if __name__ == '__main__':
