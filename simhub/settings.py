@@ -102,7 +102,17 @@ LOGGING = {
         },
     },
     'loggers': {
+        'scheduler': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
         'gambler': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'faststi': {
             'handlers': ['file'],
             'level': 'INFO',
             'propagate': True,
