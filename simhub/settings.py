@@ -21,6 +21,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'gambler.apps.GamblerConfig',
     'faststi.apps.FaststiConfig',
+    'blog.apps.BlogConfig',
     'scheduler.apps.SchedulerConfig',
     'django.contrib.admin',
     'django.contrib.auth',

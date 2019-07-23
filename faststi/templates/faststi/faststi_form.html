@@ -28,9 +28,9 @@
     <h1>FastSTI: Fast agent-based simulation of epidemics</h1>
     <p class="intro">
         This is only a demonstration. We've had to limit what you can do because
-        we don't want to break the Internet (or at least our host's server). To
-        explore the full potential of FastSTI you'll want to run it on your own
-        computer (or a high-performance one that you have access to). The
+        we don't want to break the Internet (or at least our server). To explore
+        the full potential of FastSTI you'll want to run it on your own computer
+        (or a high-performance one that you have access to). The
         <a href="https://faststi.readthedocs.io/en/latest/">documentation</a>
         explains how.
     </p>
@@ -67,6 +67,10 @@
             </p>
 
             <div id="initial-infections" class="tabbed">
+                <p>
+                    These parameters indicate the proportions of agents who are
+                    infected at the beginning of the simulation.
+                </p>
                 <div class="fieldWrapper source-selector"
                      onclick="switchFormFile(this)">
                     {{ form.e0_initial_infections_data_source.errors }}
@@ -90,6 +94,11 @@
             </div>
 
             <div id="infectiousness" class="tabbed">
+                <p>
+                    These parameters indicate the risk of infection per
+                    iteration for an uninfected agent in a sexual
+                    relationship with an infected one.
+                </p>
                 <div class="fieldWrapper source-selector"
                      onclick="switchFormFile(this)">
                     {{ form.k0_infectiousness_data_source.errors }}
@@ -113,6 +122,10 @@
             </div>
 
             <div id="mortality" class="tabbed">
+                <p>
+                    These parameters indicate the risk of an agent dying per
+                    iteration.
+                </p>
                 <div class="fieldWrapper source-selector"
                      onclick="switchFormFile(this)">
                     {{ form.h0_mortality_data_source.errors }}

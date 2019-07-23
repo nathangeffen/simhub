@@ -82,3 +82,7 @@ ul.errorlist {
     max-width: 45%;
     max-height: 200px;
 }
+
+li {
+    margin-top: 12px;
+}

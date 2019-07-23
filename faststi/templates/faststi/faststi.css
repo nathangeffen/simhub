@@ -13,10 +13,10 @@ body {
     margin: auto;
     padding: 18px;
     font-family: "Arial Black", Gadget, sans-serif;
+    font-size: 12pt;
 }
 
 p.intro {
-    width: 80%;
     max-width: 560px;
 }
 
@@ -27,17 +27,13 @@ p.intro {
     padding-bottom: 12px;
     margin-top: 12px;
     margin-bottom: 12px;
+    max-width: 710px;
 }
 
 .fieldWrapper {
     margin-bottom: 6px;
     margin-left: 3px;
     padding: 6px 6px 0 0;
-    font-size: 12px;
-}
-
-legend {
-    font-size: 12px;
 }
 
 .tab-selector {
@@ -68,7 +64,6 @@ legend {
 
 .tabbed {
     display: none;
-    max-width: 630px;
 }
 
 
@@ -183,9 +178,8 @@ legend {
 }
 
 @media only screen and (max-width: 700px) {
-    #chart-prevalence,
-    #chart-population {
-        width: 100;
+    body {
+        font-size: 9pt;
     }
 }
 

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Simulation Hub {{block.super}}
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>Simulation Hub: Where we pretend we're modelling the world
+    </h1>
+
+
+    <ul>
+        <li>
+            <a href="{% url "faststi:faststi_form" %}">
+                FastSTI: Agent-based models of sexually transmitted infections
+            </a>
+        </li>
+        <li>
+            <a href="{% url "gambler:gambler_form" %}">
+                Gambler: Silly test simulation to make sure this website works
+            </a>
+        </li>
+    </ul>
+
+{% endblock %}
