@@ -169,8 +169,18 @@ class JobView:
     # Public methods
 
     def run(self, command, key=None):
-        return subprocess.run(command, timeout=settings.TIMEOUT,
-                                env=self._env)
+        try:
+            prog_out = subprocess.run(command, timeout=settings.TIMEOUT,
+                                      env=self._env,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE)
+            if prog_out.returncode > 0:
+                raise RuntimeError("Return code > 0")
+        except (RuntimeError, subprocess.CalledProcessError) as e:
+            logger.error(f"{e}. Check file {self._get_output_filename(key)}")
+            with open(self._get_output_filename(key), 'w') as f:
+                f.write(prog_out.stderr.decode("utf-8"))
+        return prog_out
 
     def set_ping_time(self, key):
         self._job_queue[key]["ping"] = timezone.now()
@@ -345,6 +355,7 @@ class JobJSONView(TemplateView):
             context['msg'] = _("Sorry, job took too much time. ")
             context['msgstatus'] = "error"
         elif fail is not None:
+            logger.warning(f"Job for key {key} failed with code {fail}")
             self.request.session["status"] = context["status"] = "idle"
             context['msg'] = _("Sorry, job failed.")
             context['msgstatus'] = "error"
