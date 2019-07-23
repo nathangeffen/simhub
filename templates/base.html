@@ -26,6 +26,13 @@
         {% block content %}
         {% endblock %}
 
+        {% block footer %}
+            <div id="footer">
+                {% if request.path != "/" %}
+                    <p><a href="{% url 'blog:blog_home' %}">Simhub home</a></p>
+                {% endif %}
+            </div>
+        {% endblock %}
         {% block scripts %}
         {% endblock %}
     </body>
