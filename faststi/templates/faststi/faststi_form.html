@@ -179,47 +179,49 @@
 
     {% if config_files %}
         <div id="filenames">
-            <p>Configuration file:
+            <h2>Files</h2>
+            <ul>
+                <li>
                 <span id="config-filename">
                     <a href="{% url "faststi:faststi_config" config_filename %}"
                        target="_blank">
-                        {{config_filename}}
+                        Configuration
                     </a>
                 </span>
-            </p>
-            <p>Initial infection dataset:
+            </li>
+            <li>
                 <span id="initial-infection-filename">
                     <a href="{% url "faststi:faststi_data" initial_infection_filename %}"
                        target="_blank">
-                        {{initial_infection_filename}}
+                        Initial infection dataset
                     </a>
                 </span>
-            </p>
-            <p>Mortality dataset:
+            </li>
+            <li>
                 <span id="mortality-filename">
                     <a href="{% url "faststi:faststi_data" mortality_filename %}"
                        target="_blank">
-                        {{mortality_filename}}
+                        Mortality dataset
                     </a>
                 </span>
-            </p>
-            <p>Infectiousness dataset:
+            </li>
+            <li>
                 <span id="infect-filename">
                     <a href="{% url "faststi:faststi_data" infectiousness_filename %}"
                        target="_blank">
-                        {{infectiousness_filename}}
+                        Infectiousness dataset
                     </a>
                 </span>
-            </p>
+            </li>
 
-            <p>Output file:
+            <li>
                 <span id="output-filename">
                     <a href="{% url "faststi:faststi_output" output_filename %}"
                        target="_blank">
-                        {{output_filename}}
+                        Output
                     </a>
                 </span>
-            </p>
+            </li>
         </div>
     {% endif %}
 
