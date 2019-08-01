@@ -23,16 +23,53 @@
     </head>
 
     <body>
-        {% block content %}
-        {% endblock %}
 
-        {% block footer %}
-            <div id="footer">
-                {% if request.path != "/" %}
-                    <p><a href="{% url 'blog:blog_home' %}">Simhub home</a></p>
-                {% endif %}
-            </div>
-        {% endblock %}
+        <div id="banner">
+            {% block banner %}
+                <h1>
+                    {% block pagetitle %}
+                        Simulation Hub: Where we pretend we're
+                        modelling the world
+                    {% endblock %}
+                </h1>
+                {% block messages %}
+                    <ul id="messages">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <li
+                                    {% if message.tags %}
+                                    class="{{ message.tags }}"
+                                    {% endif %}
+                                >
+                                    {{ message }}
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                {% endblock %}
+            {% endblock %}
+        </div>
+
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <footer>
+            {% block footer %}
+                <p>
+                    <span id="menu">
+                        {% if request.path != "/" %}
+                            <a href="{% url 'blog:blog_home' %}">Simhub home</a>
+                        {% endif %}
+                    </span>
+                    <span id="copyright">
+                        Copyright &copy; 2019 Simhub
+                    </span>
+                </p>
+            {% endblock %}
+        </footer>
+
         {% block scripts %}
         {% endblock %}
     </body>

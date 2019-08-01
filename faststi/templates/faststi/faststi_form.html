@@ -13,19 +13,12 @@
     </style>
 {% endblock %}
 
+{% block pagetitle %}
+    FastSTI: Fast agent-based simulation of epidemics
+{% endblock %}
+
 {% block content %}
 
-    <ul id="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                    {{ message }}
-                </li>
-            {% endfor %}
-        {% endif %}
-    </ul>
-
-    <h1>FastSTI: Fast agent-based simulation of epidemics</h1>
     <p class="intro">
         This is only a demonstration. We've had to limit what you can do because
         we don't want to break the Internet (or at least our server). To explore
@@ -445,29 +438,39 @@
          var uninfected = document.getElementsByClassName("uninfected");
          for (var e of uninfected) {
              if (getComputedStyle(e, null).display != "none") {
-                 var text = document.createTextNode('{% trans "Uninfected" %}');
-                 e.parentNode.insertBefore(text, e);
+                 var label = document.createElement("label");
+                 label.innerHTML = '{% trans "Uninfected" %}';
+                 label.classList.add("stage");
+                 e.parentNode.insertBefore(label, e);
              }
          }
          var treated = document.getElementsByClassName("treated");
          for (var e of treated) {
-             var text = document.createTextNode('{% trans "Treated" %}');
-             e.parentNode.insertBefore(text, e);
+             var label = document.createElement("label");
+             label.innerHTML = '{% trans "Treated" %}';
+             label.classList.add("stage");
+             e.parentNode.insertBefore(label, e);
          }
          var primary = document.getElementsByClassName("primary");
          for (var e of primary) {
-             var text = document.createTextNode('{% trans "Primary" %}');
-             e.parentNode.insertBefore(text, e);
+             var label = document.createElement("label");
+             label.innerHTML = '{% trans "Primary" %}';
+             label.classList.add("stage");
+             e.parentNode.insertBefore(label, e);
          }
          var chronic = document.getElementsByClassName("chronic");
          for (var e of chronic) {
-             var text = document.createTextNode('{% trans "Chronic" %}');
-             e.parentNode.insertBefore(text, e);
+             var label = document.createElement("label");
+             label.innerHTML = '{% trans "Chronic" %}';
+             label.classList.add("stage");
+             e.parentNode.insertBefore(label, e);
          }
          var final = document.getElementsByClassName("final");
          for (var e of final) {
-             var text = document.createTextNode('{% trans "Final" %}');
-             e.parentNode.insertBefore(text, e);
+             var label = document.createElement("label");
+             label.innerHTML = '{% trans "Final" %}';
+             label.classList.add("stage");
+             e.parentNode.insertBefore(label, e);
          }
 
          for (var elem of document.getElementsByClassName("source-selector")) {

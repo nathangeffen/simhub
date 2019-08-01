@@ -4,17 +4,11 @@
     Gambler simulation {{block.super}}
 {% endblock %}
 
-{% block content %}
+{% block pagetitle %}
+    Does a casino make money if the odds are even?
+{% endblock %}
 
-    <ul id="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                    {{ message }}
-                </li>
-            {% endfor %}
-        {% endif %}
-    </ul>
+{% block content %}
 
     <form id="sim-parameters" action="{% url 'gambler:gambler_form' %}" method="post">
         {% csrf_token %}
