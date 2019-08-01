@@ -1,29 +1,26 @@
 @media (min-width: 624px) {
     body {
         max-width: 700px;
-        padding: 5%;
-        font-size: 16px;
+        margin: 6px auto 6px auto;
+    }
+    #charts div {
+        display: inline;
     }
 }
 
 @media (max-width: 623px) {
     body {
-        padding: 2%;
-        font-size: 14px;
-    }
-    canvas {
-        display: block;
+        margin: 6px 12px 6px 12px;
     }
 }
 
 body {
     font-family: "Arial Black", Gadget, sans-serif;
-    margin: auto;
     font-size: 16px;
 }
 
 h1 {
-    font-size: 120%;
+    font-size: 20px;
 }
 
 .busy {
@@ -92,7 +89,7 @@ ul.errorlist {
 #output {
     height: 180px;
     overflow-y: scroll;
-    font-size: 80%;
+    font-size: 14px;
     background-color: lightblue;
     border: 1px solid black;
     border-radius: 10px;
@@ -106,15 +103,6 @@ ul.errorlist {
     margin-top: 4px;
 }
 
-#chart-prevalence {
-    max-width: 45%;
-    max-height: 200px;
-}
-#chart-population {
-    max-width: 45%;
-    max-height: 200px;
-}
-
 li {
     margin-top: 12px;
 }
@@ -124,7 +112,7 @@ footer {
     margin-bottom: 12px;
     padding-top: 12px;
     border-top: 1px solid lightgray;
-    font-size: 80%;
+    font-size: 14px;
 }
 
 #copyright {
