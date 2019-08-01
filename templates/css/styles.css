@@ -71,7 +71,8 @@ ul.errorlist {
 
 #sim-parameters label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 3px;
+    margin-top: 5px;
 }
 
 #sim-parameters input {

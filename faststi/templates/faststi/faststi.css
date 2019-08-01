@@ -38,14 +38,15 @@ input[type=number] {
 }
 
 .tab-selector:hover {
-    background-color: lightgray;
+    background-color: gray;
     color: black;
     cursor: pointer;
     outline: none;
 }
 
 .selected {
-    background-color: red;
+    background-color: lightgray;
+    color: black;
     border: none;
     outline: none;
 }
@@ -118,7 +119,7 @@ input[type=number] {
 }
 
 #advanced {
-    margin-top: 9px;
+    margin-top: 11px;
     padding-top: 6px;
     padding-left: 6px;
     border: 1px solid black;
@@ -145,8 +146,4 @@ input[type=number] {
     #chart-population {
         flex: auto;
     }
-}
-
-
-#output {
 }
