@@ -16,7 +16,6 @@ input[type=number] {
     padding-bottom: 12px;
     margin-top: 12px;
     margin-bottom: 12px;
-    max-width: 710px;
 }
 
 .fieldWrapper {
@@ -28,7 +27,7 @@ input[type=number] {
 .tab-selector {
     text-align: center;
     height: 30px;
-    width: 70px;
+    width: 65px;
     background-color: black;
     color: white;
     margin-left: 0;
