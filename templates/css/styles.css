@@ -1,26 +1,22 @@
 @media (min-width: 624px) {
-    html {
-        font-size: 16px;
-    }
     body {
         margin: 5%;
         max-width: 700px;
         padding: 5%;
         margin: auto;
+        font-size: 16px;
     }
 }
 
 @media (max-width: 623px) {
-    html {
-        font-size: 14px;
-    }
-    canvas {
-        display: block;
-    }
     body {
         margin: 2%;
         padding: 2%;
         margin: auto;
+        font-size: 14px;
+    }
+    canvas {
+        display: block;
     }
 }
 
