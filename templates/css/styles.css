@@ -3,9 +3,6 @@
         max-width: 700px;
         margin: 6px auto 6px auto;
     }
-    #charts div {
-        display: inline;
-    }
 }
 
 @media (max-width: 623px) {
@@ -14,13 +11,13 @@
     }
 }
 
-body {
+html, body, p, label, ul, ol, li {
     font-family: "Arial Black", Gadget, sans-serif;
     font-size: 16px;
 }
 
 h1 {
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .busy {
@@ -89,11 +86,10 @@ ul.errorlist {
 #output {
     height: 180px;
     overflow-y: scroll;
-    font-size: 14px;
-    background-color: lightblue;
+    font-size: 15px;
     border: 1px solid black;
     border-radius: 10px;
-    padding: 15px;
+    padding-left: 22px;
 }
 
 
