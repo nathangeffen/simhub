@@ -4,6 +4,14 @@
     Simulation Hub Home {{block.super}}
 {% endblock %}
 
+{% block context-menu %}
+    <a href="{% url 'faststi:faststi_form' %}">
+        FastSTI
+    </a>
+    <a href="{% url 'gambler:gambler_form' %}">
+        Gambler demo
+    </a>
+{% endblock %}
 
 {% block content %}
 

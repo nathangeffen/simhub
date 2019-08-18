@@ -33,6 +33,13 @@
                         modelling the world
                     {% endblock %}
                 </h1>
+                <nav>
+                    {% block menu %}
+                        {% block context-menu %}
+                        {% endblock %}
+
+                    {% endblock %}
+                </nav>
                 {% block messages %}
                     <ul id="messages">
                         {% if messages %}
@@ -59,11 +66,6 @@
         <footer>
             {% block footer %}
                 <p>
-                    <span id="menu">
-                        {% if request.path != "/" %}
-                            <a href="{% url 'blog:blog_home' %}">Simhub home</a>
-                        {% endif %}
-                    </span>
                     <span id="copyright">
                         Copyright &copy; 2019 Simhub
                     </span>
