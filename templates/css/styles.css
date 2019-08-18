@@ -165,6 +165,7 @@ nav a.active {
 
 pre {
     font-family: monospace;
+    font-size: 66;
     background-color: lightgray;
     padding: 10px;
 }
