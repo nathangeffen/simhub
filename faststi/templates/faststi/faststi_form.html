@@ -35,6 +35,79 @@
 
 
 {% block content %}
+    <div
+        {% if request.method == "GET" %}
+        style="display:none;"
+        {% endif %}
+    >
+        <div id="charts">
+            <div>
+                <canvas height="300" id="chart-prevalence">
+                    Graph showing prevalence against time
+                </canvas>
+            </div>
+            <div>
+                <canvas height="300" id="chart-population">
+                    Graph showing number of live and dead agents against time
+                </canvas>
+            </div>
+        </div>
+
+        <h2>Output</h2>
+
+        <ol id="output">
+
+        </ol>
+
+        {% if config_files %}
+            <div id="filenames">
+                <h2>Files</h2>
+                <ul>
+                    <li>
+                        <span id="config-filename">
+                            <a href="{% url "faststi:faststi_config" config_filename %}"
+                               target="_blank">
+                                Configuration
+                            </a>
+                        </span>
+                    </li>
+                    <li>
+                        <span id="initial-infection-filename">
+                            <a href="{% url "faststi:faststi_data" initial_infection_filename %}"
+                               target="_blank">
+                                Initial infection dataset
+                            </a>
+                        </span>
+                    </li>
+                    <li>
+                        <span id="mortality-filename">
+                            <a href="{% url "faststi:faststi_data" mortality_filename %}"
+                               target="_blank">
+                                Mortality dataset
+                            </a>
+                        </span>
+                    </li>
+                    <li>
+                        <span id="infect-filename">
+                            <a href="{% url "faststi:faststi_data" infectiousness_filename %}"
+                               target="_blank">
+                                Infectiousness dataset
+                            </a>
+                        </span>
+                    </li>
+
+                    <li>
+                        <span id="output-filename">
+                            <a href="{% url "faststi:faststi_output" output_filename %}"
+                               target="_blank">
+                                Output
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
 
     <p class="intro">
         FastSTI is an <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">open source</a> framework
@@ -42,11 +115,10 @@
         epidemics.</p>
 
     <p>
-        It is designed to
-        handle up to tens of millions of agents on a mid-range laptop, or run
-        many smaller simulations quickly in parallel. On a high performance
-        computer it can run dozens of large simulations or thousands of small
-        ones in parallel.
+        It is designed to handle up to tens of millions of agents on a mid-range
+        laptop, or run many smaller simulations quickly in parallel. On a high
+        performance computer it can run dozens of large simulations or thousands
+        of small ones in parallel.
     </p>
     <p class="intro">
         This page demonstrates what FastSTI can do. We've had to limit how you
@@ -301,74 +373,6 @@ Execute events after simulation runs
 
         <input id="simulate-button" type="submit" value="Simulate">
     </form>
-
-
-    <div id="charts">
-        <div>
-            <canvas height="300" id="chart-prevalence">
-                Graph showing prevalence against time
-            </canvas>
-        </div>
-        <div>
-            <canvas height="300" id="chart-population">
-                Graph showing number of live and dead agents against time
-            </canvas>
-        </div>
-    </div>
-
-    <h2>Output</h2>
-
-    <ol id="output">
-
-    </ol>
-
-    {% if config_files %}
-        <div id="filenames">
-            <h2>Files</h2>
-            <ul>
-                <li>
-                    <span id="config-filename">
-                        <a href="{% url "faststi:faststi_config" config_filename %}"
-                           target="_blank">
-                            Configuration
-                        </a>
-                    </span>
-                </li>
-                <li>
-                    <span id="initial-infection-filename">
-                        <a href="{% url "faststi:faststi_data" initial_infection_filename %}"
-                           target="_blank">
-                            Initial infection dataset
-                        </a>
-                    </span>
-                </li>
-                <li>
-                    <span id="mortality-filename">
-                        <a href="{% url "faststi:faststi_data" mortality_filename %}"
-                           target="_blank">
-                            Mortality dataset
-                        </a>
-                    </span>
-                </li>
-                <li>
-                    <span id="infect-filename">
-                        <a href="{% url "faststi:faststi_data" infectiousness_filename %}"
-                           target="_blank">
-                            Infectiousness dataset
-                        </a>
-                    </span>
-                </li>
-
-                <li>
-                    <span id="output-filename">
-                        <a href="{% url "faststi:faststi_output" output_filename %}"
-                           target="_blank">
-                            Output
-                        </a>
-                    </span>
-                </li>
-        </div>
-    {% endif %}
 
     {{ status }}
 
