@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{flatpage.title}} | {{block.super}}
+{% endblock %}
+
+{% block pagetitle %}
+    {{flatpage.title|safe}}
+{% endblock %}
+
+{% block content %}
+{{flatpage.content|safe}}
+{% endblock %}

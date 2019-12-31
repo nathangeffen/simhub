@@ -3,35 +3,44 @@
 {% load faststi %}
 
 {% block title %}
-    Fast agent-based model of sexually transmitted infections {{block.super}}
+    Fast agent-based model of sexually transmitted infections
 {% endblock %}
 
 {% block styles %}
-    {{block.super}}
     <style>
+     {% include "css/styles-2020.css" %}
      {% include "faststi/faststi.css" %}
     </style>
 {% endblock %}
 
-{% block pagetitle %}
-    FastSTI: Fast agent-based simulation of epidemics
-{% endblock %}
-
 {% block context-menu %}
-    <a href="https://faststi.readthedocs.io/en/latest/">
-        Documentation
-    </a>
-    <a href="https://github.com/nathangeffen/faststi/releases/">
-        Download
-    </a>
-    <a href="https://github.com/nathangeffen/faststi">
-        Source code
-    </a>
-    <a href="{% url 'blog:blog_home' %}">
-        Simhub
-    </a>
+    <ul>
+        <li>
+            <a href="{% url 'blog:home' %}">
+                Home
+            </a>
+        </li>
+        <li>
+            <a href="https://faststi.readthedocs.io/en/latest/">
+                Documentation
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/nathangeffen/faststi/releases/">
+                Download
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/nathangeffen/faststi">
+                Source code
+            </a>
+        </li>
 {% endblock %}
 
+{% block pagetitle %}
+    Demonstration of an agent-based simulation of a sexually transmitted
+    infection epidemic
+{% endblock %}
 
 
 {% block content %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    About
+{% endblock %}
+
+{% block pagetitle %}
+    About Simhub
+{% endblock %}
+
+{% block content %}
+
+    <p>
+        This website demonstrates some computer programs, mostly simulations,
+        and my personal blog.
+    </p>
+
+    <p>
+        Here is my <a href="{% url 'blog:cv' %}">CV</a>.
+    </p>
+
+{% endblock %}

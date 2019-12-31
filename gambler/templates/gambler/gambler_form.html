@@ -4,17 +4,15 @@
     Gambler simulation {{block.super}}
 {% endblock %}
 
-{% block pagetitle %}
-    Does a casino make money if the odds are even?
+{% block styles %}
+    <style>
+     {% include "css/styles-2020.css" %}
+    </style>
 {% endblock %}
 
-{% block context-menu %}
-    <a href="{% url 'blog:blog_home' %}">
-        Simhub
-    </a>
-    <a href="{% url 'faststi:faststi_form' %}">
-        FastSTI
-    </a>
+
+{% block pagetitle %}
+    Does a casino make money if the odds are even?
 {% endblock %}
 
 

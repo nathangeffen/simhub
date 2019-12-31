@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Simhub Blog
+{% endblock %}
+
+{% block pagetitle %}
+    Blog articles on Simhub
+{% endblock %}
+
+
+{% block content %}
+
+    <ul>
+    {% for article in object_list %}
+        <li>
+            {{article.published|date:"Y-m-d"}}:
+            <a href="{% url 'blog:detail' article.slug %}">
+                {{article.summary|safe}}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

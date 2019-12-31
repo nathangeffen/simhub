@@ -9,7 +9,7 @@
 
         <title>
             {% block title %}
-                | Simulation Hub
+                Simulation Hub
             {% endblock %}
         </title>
 
@@ -18,7 +18,7 @@
 
         {% block styles %}
             <style>
-             {% include "css/styles.css" %}
+             {% include "css/styles-2020.css" %}
             </style>
         {% endblock %}
     </head>
@@ -27,19 +27,19 @@
 
         <div id="banner">
             {% block banner %}
-                <h1>
-                    {% block pagetitle %}
-                        Simulation Hub: Where we pretend we're
-                        modelling the world
-                    {% endblock %}
-                </h1>
                 <nav>
                     {% block menu %}
                         {% block context-menu %}
+                            {% include "menu.html" %}
                         {% endblock %}
-
                     {% endblock %}
                 </nav>
+                <h1>
+                    {% block pagetitle %}
+                        Simulation Hub Home
+                    {% endblock %}
+                </h1>
+
                 {% block messages %}
                     <ul id="messages">
                         {% if messages %}

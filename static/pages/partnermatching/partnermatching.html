@@ -1,0 +1,575 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="Nathan Geffen" />
+  <meta name="date" content="2015-03-24" />
+  <title>Optimising partner matching for microsimulations of the HIV epidemic</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="styles/partnermatching.css" type="text/css" />
+  <script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <!--
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+  -->
+  <script type="text/javascript" src="scripts/jquery-2.1.3.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.async.js"></script>
+  <script type="text/javascript" src="scripts/partnermatch.js"></script>
+  <script type="text/javascript"  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+<body>
+<div id="header">
+<h1 class="title">Optimising partner matching for microsimulations of the HIV epidemic</h1>
+<h2 class="author">Nathan Geffen</h2>
+<h3 class="date">March 24, 2015</h3>
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>Microsimulation is a way of modelling epidemics that is growing in popularity. Instead of the traditional way of building a model consisting of differential equations and then solving them, a microsimulation consists of, perhaps, thousands of agents, each representing a person, and each behaving according to a simple set of rules. Instead of outputs like infection and mortality rates being derived from equations, they are derived from the interactions of the agents over many iterations.</p>
+<aside>
+The terms <em>microsimulation</em> and <em>agent based modelling</em> describe very similar things. It is also not easy to find clear explanations of what the differences are between the two techniques. My understanding is that a microsimulation is an agent-based model whose parameters are initiated based on real-world data. Microsimulation is the term used in most literature on the HIV epidemic, and so that is what I will stick to here.
+</aside>
+<p>Microsimulations are much more computationally intensive than traditional equation-based models but they have some characteristics that make them attractive. They are stochastic: randomness is built into them, and this is sometimes desired. While simple models are usually easier to implement as a set of differential equations, as the number of variables increases and models become increasingly complex, equation-based models become unwieldly and ultimately impractical. Yet you can make the rules of each agent in a microsimulation quite complex without much difficulty, and the microsimulation, if designed well, will scale. Microsimulations also allow you to examine what happens to specific agents or groups of agents more easily than equation-based models. Equation-based models do allow a population to be broken down into different compartments, but having multiple compartments can quickly become unmanageable.</p>
+<h2 id="how-microsimulations-work">How microsimulations work</h2>
+<p>Microsimulations can model events in discrete or continuous time. I am primarily concerned with discrete microsimulation, but key principles are for the most part the same between them, and while I am not yet sure, I suspect and hope that most of what is presented here will work for continuous microsimulations as well.</p>
+<p>At the beginning of the simulation you initialise a population of agents with information. So if you are simulating the HIV epidemic you might give each agent an initial age, HIV infection status, sex, a parameter describing how often they form new sexual partnerships. If this is a microsimulation as opposed to agent-based modelling, the agents will be initialised with data which matches real-world data, maybe with some stochastic noise added.</p>
+<p>Then in a discrete microsimulation, you decide on a time-step, say one day, one week or one month. You also decide how many time-steps you wish to run the simulation for. So if your time-step is one month and you want to execute the simulation for 20 years, the simulation will run for <span class="math">\(20 \times 12 = 240\)</span> iterations. Each iteration involves interactions of agents and events. Examples of events are <em>DIE</em>, which determines if it is an agent's turn to die, <em>INFECT</em> which determines if it is an agent's turn to become infected with, say, HIV, <em>MATCH</em>, which finds a new sexual partner for an agent, or <em>BIRTH</em> which decides whether or not an agent is to give birth to a new agent. So on each iteration, the simulation steps through every agent and applies events to it. At the end of the simulation, you'll hopefully have interesting information like life-expectancy of the simulated population and the changes in the HIV prevalence and incidence rates over time.</p>
+<p>This is a typical structure of a discrete microsimulation. Variations are possible, including swapping lines 2 and 3.</p>
+<table class="sourceCode python numberLines" id="mycode" startFrom="1"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python"><span class="kw">for</span> each time-step
+    <span class="kw">for</span> each event E
+        <span class="kw">for</span> each agent A
+            <span class="kw">if</span> E should be applied to A
+                <span class="dt">apply</span> E to A</code></pre></td></tr></table>
+<p>We are particularly interested in lines 3 to 5. The event applied in line 5 can either be a simple operation that considers only agent A, or it can be more complicated and consider a range of agents (maybe even all the other agents) with respect to A. The former will typically be fast, the latter is often slow.</p>
+<h2 id="fast-versus-slow-events">Fast versus slow events</h2>
+<p>Let's consider the <em>DIE</em> event. On an iteration, it will be checked to see if it must be applied to every living agent. Assume a particular agent has a risk of dying in a given month of <span class="math">\(1\%\)</span> of <span class="math">\(0.01\)</span>, and assume each iteration corresponds to a month. Then the DIE event generates a uniform pseudo-random number on the semi-open range <span class="math">\([0, 1)\)</span>. If the random number is less than <span class="math">\(0.1\)</span>, the agent dies, else it lives on another month.</p>
+<p>The time that it takes <em>DIE</em> to execute is a function of the number of agents, <span class="math">\(n\)</span>. In fact here it is directly proportional to the number of agents. The time taken, <span class="math">\(T\)</span>, is equal to n times a constant, <span class="math">\(c\)</span>.</p>
+<p><span class="math">\[T = cn\]</span></p>
+<p>For comparing events, the constant <span class="math">\(c\)</span>, the time taken for the small set of operations that carry out the event's work, is tiny. We can dispense with it from hereon.</p>
+<p>Now consider the <em>MATCH</em> event. This is the partner matching algorithm of the title of this article. Like the <em>DIE</em> event it is checked against every living agent on an iteration to see if it must be applied. A subset of agents will need to be paired with new sexual partners. Let's assume the random number generator shows that agent, <span class="math">\(A\)</span>, should find a new partner. We could then look through the remaining agents to find the most suitable match for <span class="math">\(A\)</span>.</p>
+<p>For simplicity let's assume every agent is in the market for a new partner. Then for the first agent, <span class="math">\(A\)</span>, the <em>MATCH</em> event will look through the remaining <em>n-1</em> agents to find a match. Let's assume it matches <span class="math">\(A\)</span> with agent <span class="math">\(D\)</span>. Then for the next agent, let's call it <span class="math">\(B\)</span>, <em>MATCH</em> will look through <em>n-2</em> agents to find the most suitable match, including <span class="math">\(D\)</span> who will be rejected as a suitable match for <span class="math">\(B\)</span> because it is already matched to <span class="math">\(A\)</span>.</p>
+<p>In general, assuming all agents need to be matched, the execution time, <span class="math">\(T\)</span>, over <span class="math">\(n\)</span> agents, for <em>MATCH</em> is proportional to</p>
+<p><span class="math">\[T = [ (n - 1) + (n - 2) + (n - 3) + ... + 3 + 2 + 1 ]\]</span>.</p>
+<p>This can be rewritten as:</p>
+<p><span class="math">\[T =  \sum_{i=1}^{n-1} i = \frac{n(n-1)}{2} =  \frac{n^2-n}{2}\]</span></p>
+<p>Examine this table to see how much faster the <em>DIE</em> event is than the <em>MATCH</em> event.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Agents (n)</th>
+<th align="right"><span class="math">\(n\)</span></th>
+<th align="right"><span class="math">\(\frac{n^2-n}{2}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">45</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">100</td>
+<td align="right">4,950</td>
+</tr>
+<tr class="odd">
+<td align="right">1,000</td>
+<td align="right">1,000</td>
+<td align="right">499,500</td>
+</tr>
+<tr class="even">
+<td align="right">10,000</td>
+<td align="right">10,000</td>
+<td align="right">49,995,000</td>
+</tr>
+<tr class="odd">
+<td align="right">100,000</td>
+<td align="right">100,000</td>
+<td align="right">4,999,950,000</td>
+</tr>
+<tr class="even">
+<td align="right">1,000,000</td>
+<td align="right">1,000,000</td>
+<td align="right">499,999,500,000</td>
+</tr>
+</tbody>
+</table>
+<p>As you can see, as we increase the number of agents in our simulation, the <em>MATCH</em> event has to do an ever greater amount of work than the <em>DIE</em> event and becomes much slower. You might respond that not all agents need to be matched. Well, let's say it's only 5% of agents. Now our equation is:</p>
+<p><span class="math">\[\frac{n^2-n}{40}\]</span></p>
+<p>As the table shows it doesn't change the fact that the <em>MATCH</em> event is still very slow:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right"><span class="math">\(n\)</span></th>
+<th align="right"><span class="math">\(\frac{n^2-n}{2}\)</span></th>
+<th align="right"><span class="math">\(\frac{n^2-n}{40}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">45</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">4,950</td>
+<td align="right">248</td>
+</tr>
+<tr class="odd">
+<td align="right">1,000</td>
+<td align="right">499,500</td>
+<td align="right">24,975</td>
+</tr>
+<tr class="even">
+<td align="right">10,000</td>
+<td align="right">49,995,000</td>
+<td align="right">2,499,750</td>
+</tr>
+<tr class="odd">
+<td align="right">100,000</td>
+<td align="right">4,999,950,000</td>
+<td align="right">249,997,500</td>
+</tr>
+<tr class="even">
+<td align="right">1,000,000</td>
+<td align="right">499,999,500,000</td>
+<td align="right">24,999,975,000</td>
+</tr>
+</tbody>
+</table>
+<p>The <span class="math">\(n^2\)</span> term of the formula for the number of operations <em>MATCH</em> performs dominates. In computer science, to simplify our discussions of how efficient an algorithm is, we usually dispense with smaller terms like <span class="math">\(n\)</span> and constants such as <span class="math">\(1/40\)</span>. We can do this formally by defining classes of functions called big <span class="math">\(O\)</span>. Each class is of the form: <span class="math">\(O(f(g))\)</span>.</p>
+<p>We say that <em>MATCH</em>'s <em>asymptotic efficiency class</em> is <span class="math">\(O(n^2)\)</span> while the asymptotic efficiency class of <em>DIE</em> is <span class="math">\(O(n)\)</span>.</p>
+<p>The <a href="http://xlinux.nist.gov/dads/HTML/bigOnotation.html">formal definition of big O</a> is:</p>
+<blockquote>
+<p><span class="math">\(f(n) = O(g(n))\)</span> means there are positive constants <span class="math">\(c\)</span> and <span class="math">\(k\)</span>, such that <span class="math">\(0 \leq f(n) \leq cg(n)\)</span> for all <span class="math">\(n \geq k\)</span>, <span class="math">\(c\)</span> and <span class="math">\(k\)</span> are constants.</p>
+</blockquote>
+<p>This definition removes the need for constants and smaller terms. For example <span class="math">\(O(2n^2 - 10n) = O(n^2)\)</span>.</p>
+<p>We are interested in algorithms that fit into three big <span class="math">\(O\)</span> classes: <span class="math">\(O(n)\)</span>, <span class="math">\(O(n \log n)\)</span> and <span class="math">\(O(n^2)\)</span>. The following table shows the difference in efficiency between them:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right"><span class="math">\(n\)</span></th>
+<th align="right"><span class="math">\(n \log{n}\)</span></th>
+<th align="right"><span class="math">\(n^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">33</td>
+<td align="right">100</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">664</td>
+<td align="right">10,000</td>
+</tr>
+<tr class="odd">
+<td align="right">1,000</td>
+<td align="right">9,966</td>
+<td align="right">1,000,000</td>
+</tr>
+<tr class="even">
+<td align="right">10,000</td>
+<td align="right">132,877</td>
+<td align="right">100,000,000</td>
+</tr>
+<tr class="odd">
+<td align="right">100,000</td>
+<td align="right">1,660,964</td>
+<td align="right">10,000,000,000</td>
+</tr>
+<tr class="even">
+<td align="right">1,000,000</td>
+<td align="right">19,931,569</td>
+<td align="right">1,000,000,000,000</td>
+</tr>
+</tbody>
+</table>
+<p>Note that although the log calculations use base 2, we omit the base in big O syntax because <span class="math">\(\log_{2}{n}\)</span> and <span class="math">\(\log_{10}{n}\)</span> differ by a constant.</p>
+<p>This graph shows the differences in the gradients of these three efficiency classes:</p>
+<div class="figure">
+<img src="bigoefficiencies.png" title="Asymptotic efficiency classes" alt="Asymptotic efficiency classes" />
+<p class="caption">Asymptotic efficiency classes</p>
+</div>
+<h2 id="why-the-efficiency-class-of-events-is-important">Why the efficiency class of events is important</h2>
+<p>The efficiency class of <em>DIE</em> for a single time step (or iteration) of the simulation is <span class="math">\(O(n)\)</span>. This is usually the best we can hope for any event that must be applied to all the agents. Unfortunately the <em>MATCH</em> algorithm is much slower. Its efficiency class is <span class="math">\(O(n^2)\)</span>. On the microsimulation I have worked on, <em>MATCH</em> is the bottleneck, the slowcoach that makes the microsimulation run slowly.</p>
+<p>How slowly? Well consider this:</p>
+<p>Let's say we set our time-step to a month, we have 20,000 agents and we want to simulate the HIV epidemic over 20 years. Let us further say that by the word operation we mean each time an agent is examined by our program. The <em>DIE</em> event then executes just under 4.8 million operations. Our <em>MATCH</em> algorithm by contrast performs nearly 48 billion operations. It's about ten thousand times slower than the <em>DIE</em> event.</p>
+<h4 id="an-on-algorithm-is-much-faster-than-an-on2-one">An <span class="math">\(O(n)\)</span> algorithm is much faster than an <span class="math">\(O(n^2)\)</span> one</h4>
+<aside>
+<div class="svg-block">
+<svg id="svg1" style="width:90%; height: 100px; display:none;"> <circle id="c0_0" cx="40" cy="40" r="15" stroke="black"
+        stroke-width="2" fill="white" /> <text id="t0_0" x="35" y="43" font-family="sans-serif"
+      font-size="12px" fill="black">0</text> </svg>
+<div class="alg-exec">
+<input class="alg-exec" id="nevent-button"
+    type="button" value="Show algorithm for O(n) event"
+         onclick="nEvent()"/>
+</div>
+</div>
+</aside>
+<aside>
+<div class="svg-block">
+<svg id="svg2" style="width:90%; height: 100px; display:none;">
+<circle id="c1_0" cx="40" cy="40" r="15" stroke="black"
+stroke-width="2" fill="white" /> <text id="t1_0" x="35" y="43" font-family="sans-serif"
+font-size="12px" fill="black">0</text>
+</svg>
+<div class="alg-exec">
+<p><input class="alg-exec" id="nsqevent-button" type="button"
+value="Show algorithm for O(n&sup2;) event"
+onclick="nsqEvent()"/></p>
+</div>
+</div>
+</aside>
+<p>Even so, this is not catastrophic. Modern computer hardware is extremely fast, and if we code in C or C++ and run the entire simulation once using the <em>MATCH</em> algorithm as described above, it will takes several minutes on a mid-range PC. But nearly all this time taken is spent executing the <em>MATCH</em> algorithm.</p>
+<h2 id="monte-carlo-simulation">Monte Carlo simulation</h2>
+<p>But here is the problem. We want to say what the 95% confidence intervals are for our outputs, such as life-expectancy and infection rates. To do this we need to use <a href="http://www.mimuw.edu.pl/~apalczew/CFP_lecture4.pdf">Monte Carlo methods</a>. This involves running our simulation over and over again with different values generated each time for its random variables. In fact we need to run the simulation tens of thousands of times.</p>
+<p>Now if it takes five minutes to run a single simulation (in a simulation I worked on it took quite a bit longer with our first attempt at partner matching), then running it only 10,000 times takes 34 days, which is a long time to wait for results. And 10,000 might not be enough. If we want to stochastically perturb all the model's dependent variables, we might need to run the simulation many tens of thousands of times.</p>
+<p>This is so slow that to date there are no published microsimulations of the HIV epidemic that have published confidence intervals using Monte Carlo simulation.</p>
+<p>My colleague, Leigh Johnson, with a tiny bit of assistance from me, managed to get the length of a single simulation down to less than 30 seconds on fast hardware. Now running a few simulations in parallel, it takes Johnson several days to generate confidence intervals.</p>
+<p>This is manageable, but there are three challenges I would like to overcome:</p>
+<ol style="list-style-type: decimal">
+<li><p>Bringing the time of a single simulation down even further might allow Monte Carlo simulation to be run conveniently as a matter of course on mid-range PCs.</p></li>
+<li><p>The <em>MATCH</em> event in Johnson's model has been implemented in a very domain specific way and is extremely complex. The methodology proposed here for partner matching is, I suspect, of greater general application, that can be explained more easily to other modellers who wish to try their hand at simulating the HIV epidemic as well as other diseases.</p></li>
+<li><p>If partner matching can be sped up, it might become more feasible to program microsimulations in high-level programming languages such as R or Javascript (though there is an <a href="https://statnet.csde.washington.edu/trac/raw-attachment/wiki/Resources/STERGMtutorial.pdf">R package</a> for simulating sexual networks). Using Javascript opens the possibility for web-based visualisations of microsimulations of the HIV epidemic, which as far as I am aware is not currently practical.</p></li>
+</ol>
+<p>Partner matching is vital not just in HIV simulation. If, for example, we want to simulate contagious diseases, then the risk of an agent becoming infected is related in part to the number of infected agents they come into contact with. Determining who and how many infected agents a particular agent is in contact with is similar to having to find multiple partners. The algorithms I present here can be modified without much difficulty to accommodate this.</p>
+<p>The remainder of this article deals with how to optimise partner matching.</p>
+<h2 id="partner-matching">Partner matching</h2>
+<p>In 2013, Johnson <a href="http://nathangeffen.webfactional.com/viennaposterfinal.pdf">implemented and compared two models of sexually transmitted infections</a>, a deterministic equation-based model and a microsimulation. The two models were materially identical except that the latter implemented a complex partner matching algorithm. The details of the algorithm used are complex and only partly relevant to this discussion. Here are the relevant details:</p>
+<ul>
+<li>Agents are either male or female.</li>
+<li>All agents are heterosexual. (This makes finding efficient partner formation algorithms difficult, as we shall see.)</li>
+<li>Agents have different risk profiles for HIV.</li>
+<li>Agents can be married or not married.</li>
+<li>The usual time-step for the simulation is one week.</li>
+<li>Each time-step, all agents are examined to determine if they would form new partnerships.</li>
+<li>Agents forming new partnerships can acquire a new high risk partner or acquire a new low risk partner. Marriage affects partner selection.</li>
+</ul>
+<p>The problem of partner matching is this: <em>Given an agent, <span class="math">\(A\)</span>, in a population of agents, find a suitable partner.</em></p>
+<p>Here is a simplified, incomplete version of Johnson's pair-matching algorithm:</p>
+<pre><code>Shuffle all the agents and place in a queue
+For each agent, A, in the queue
+    If A is to form a new partnership
+        Traverse the remaining agents in the queue to
+         find a suitable partner, B
+         (much complex detail omitted here)
+        A and B are now partners
+        Remove A and B from the queue</code></pre>
+<p>In its default form this is an <span class="math">\(O(n^2)\)</span> algorithm.</p>
+<aside>
+<p>Many domain-specific optimisations were made to the algorithm to reduce the number of remaining agents that were traversed and it is unclear what the asymptotic efficiency class is of the latest version of the algorithm, which is substantially faster than the earliest versions. Also note that we say <em>suitable</em>, not <em>ideal</em> partner in the definition. Johnson's algorithm doesn't find an ideal partner, nor do the algorithms presented below.</p>
+</aside>
+<p>How can we optimise this in a way that isn't too domain-specific? First we need to take a short detour.</p>
+<h2 id="euclidean-space">Euclidean space</h2>
+<p>If we consider a set of points on a Euclidean plane:</p>
+<div class="figure">
+<img src="euclideanplane.jpg" title="Euclidean plane" alt="Euclidean plane: find each point&#39;s nearest neighbour" />
+<p class="caption">Euclidean plane: find each point's nearest neighbour</p>
+</div>
+<p>All points have a position defined by their <span class="math">\(x\)</span> and <span class="math">\(y\)</span> co-ordinates. The distance between any two points, <span class="math">\(i\)</span> and <span class="math">\(j\)</span>, is given by the Euclidean distance equation:</p>
+<p><span class="math">\[\sqrt{(i_x-j_x)^2+(i_y-j_y)^2}\]</span></p>
+<p>Generalising this to multi-dimensional space, the distance, <span class="math">\(d(i,j)\)</span> between <span class="math">\(i\)</span> and <span class="math">\(j\)</span> with attributes <span class="math">\(1...m\)</span> is defined as follows:</p>
+<p><span class="math">\[d(i,j)=\sqrt{(i_1-j_1)^2+(i_2-j_2)^2+...+(i_m-j_m)^2}\]</span></p>
+<p>Now there are no known algorithms for efficiently <a href="http://en.wikipedia.org/wiki/Nearest_neighbor_search">finding the nearest neighbour to a point in high-dimensional Euclidean space</a>. However, there are good and efficient <em>approximation</em> algorithms including <a href="http://en.wikipedia.org/wiki/Locality-sensitive_hashing#LSH_algorithm_for_nearest_neighbor_search">Locality-sensitive hashing</a>, <a href="http://en.wikipedia.org/wiki/Best_bin_first">Best bin first</a> and <a href="http://kos.informatik.uni-osnabrueck.de/download/icar2005_2/node17.html">Balanced box-decomposition tree</a>.</p>
+<p>If we could develop a partnership suitability distance measure between agents that could be mapped to Euclidean space, we could use one of these algorithms to find suitable partners. Unfortunately, while we can implement functions that measure suitability for partnership, these can't be mapped to Euclidean space (or, more generally, <a href="http://en.wikipedia.org/wiki/Metric_space">metric space</a>), not if we're modelling a heterosexual HIV epidemic. Consider the attributes we are interested in for measuring suitability of two agents for partnership:</p>
+<ul>
+<li>age</li>
+<li>sex</li>
+<li>desire for a new partnership at this time</li>
+<li>risk behaviour propensity (including whether or not the agent is a sex worker)</li>
+<li>relationship status (including whether or not the agent is married)</li>
+</ul>
+<p>And perhaps if we wish to do very sophisticated simulations in the future, we might add geographical location to this.</p>
+<p>Now let's just take two characteristics, sex and age, and map it to a Euclidean plane. It's not possible. Examine the image below:</p>
+<div class="figure">
+<img src="euclideanplane2.jpg" title="Heterosexual partner matching does not map to Euclidean plane" alt="Heterosexual partner matching does not map to Euclidean plane" />
+<p class="caption">Heterosexual partner matching does not map to Euclidean plane</p>
+</div>
+<p>The closest neighbours of the blue dot are the two red dots. They all have a similar age. But the red dots are the same (they're male) and while they might be close to each other in this Euclidean plane, they actually should be far apart because we are simulating the heterosexual epidemic. In a Euclidean space, the more similar two individuals the closer they must be to each other in the space, but in fact heterosexuality by definition doesn't work that way: if two people share the same sex they are not suitable partners in a model of the heterosexual HIV epidemic.</p>
+<p>The problem doesn't end with heterosexuality. Depending on the implementation of our model, our distance measure might want to make it less likely for married agents seeking a new partnership to partner with other married agents, or even with other agents currently in a relationship. Even if we want to simulate just the male homosexual HIV epidemic, it would be difficult to map our agents to Euclidean space. When searching for a new relationship, we might want the distance to be great between otherwise well-matched agents who have been in a partnership with each other previously. We might also want to extend our simulation to account for people looking for partners of different age, wealth or education from themselves, challenges for modelling both heterosexual and homosexual relationships.</p>
+<p>Technically, the partnership space violates the <a href="http://en.wikipedia.org/wiki/Metric_space">triangle inequality</a> that must hold in Euclidean or metric space. The triangle inequality for points <span class="math">\(x\)</span>, <span class="math">\(y\)</span> and <span class="math">\(z\)</span> is:</p>
+<p><span class="math">\[d(x,z) \leq d(x,y) + d(y,z)\]</span></p>
+<p>In our set of attributes, age, risk behaviour propensity and geographical location are attributes that would map well to Euclidean space; the more similar these are between agents, the more likely they are to form partnerships. But sex for heterosexual agents does not map to a Euclidean space. And, depending on the model's assumptions, neither might several other agent attributes.</p>
+<p>Let us call attributes which do map well to Euclidean space <em>attractors</em>, and attributes that do not, <em>rejectors</em>.</p>
+<p>If all the attributes are attactors, then one of the known efficient approximation algorithms for finding nearest neighbours in Euclidean space could be used. But if there are rejector attributes with significant influence on the distance equation, then they are not appropriate. [I AM ASSUMING THIS AND MUST CHECK, BUT I'M REASONABLY CONFIDENT.]</p>
+<h2 id="optimising-partner-matching">Optimising partner matching</h2>
+<p>The first step to an efficient approximation algorithm is to implement a distance function. This is the crucial domain specific aspect of these algorithms. Once the modeller has coded the distance function, the remaining work is mostly generic. Here is a simple example of a distance function in pseudocode. The capitalised identifiers are user-defined constants.</p>
+<pre><code>distance(a, b) // a and b are agents, returns real number
+    if a and b have been partners before:
+        prev_partner = PREV_PARTNER_FACTOR
+    else
+        prev_partner = 0
+    age_diff = AGE_FACTOR * abs((a.date_of_birth - b.date_of_birth))
+    if a.sex == b.sex
+        sex_diff = SEX_ORIENTATION_FACTOR
+    else
+        sex_diff = 0
+    risk_diff = RISK_FACTOR * abs(a.riskiness - b.riskiness)
+    return prev_partner + age_diff + sex_diff + risk_diff</code></pre>
+<p>We need a measure of quality of the algorithms we look at. One way to do this is to determine how close each algorithm gets on average to selecting the ideal partner for each agent. For any given agent, imagine lining up all the agents in the population in a queue from most to least suitable partners. We can then calculate the position in the queue where that agent's selected partner sits. Here is the pseudocode for the algorithm, <em>rank</em>, that does this:</p>
+<pre><code>rank(a) // a is an agent, returns unsigned integer
+    position = 0;
+    d = distance(a, a.partner)
+    for all agents, b, such that b &lt;&gt; a and b &lt;&gt; a.partner
+        x = distance(a, b)
+        if x &lt; d
+            ++position;
+    return position;</code></pre>
+<p>Now for every agent with a partner, we can calculate its partnership's rank. Then we can calculate metrics for success of each algorithm, including the mean, median and standard deviation of all the partnership ranks.</p>
+<p>Incidentally, trying to modify the ranking algorithm slightly to produce a partner-matching algorithm is not a good idea. First, it is not stochastic, which is desired for microsimulation, and especially Monte Carlo simulation. Second, it is very slow when applied across all agents, <span class="math">\(O(n^2)\)</span>. Third, if <span class="math">\(a\)</span> is the best match for partner <span class="math">\(b\)</span>, it does not imply that <span class="math">\(b\)</span> is the best match for partner <span class="math">\(a\)</span>. In the algorithms considered here, once an agent is chosen to be a partner of the agent under consideration, its own consideration of who its potential partners are, is no longer relevant: it is in a partnership and the algorithms considers it no further. (Not all microsimulations make this assumption.)</p>
+<h3 id="brute-force">Brute force</h3>
+<p>Our first algorithm is a straightforward <em>brute force</em> search for the best available partner for each unmatched partner. Here is the pseudocode:</p>
+<pre><code>brute_force_match(Agents): // Agents is an array of agents
+    shuffle(Agents)
+    best = infinity
+    for each agent, a, in Agents
+        for each unmatched agent, b, after a in Agents
+            d = distance(a, b)
+            if d &lt; best
+                best = d
+                best_partner = b
+        make a and best_partner partners</code></pre>
+<aside>
+<p>The term <em>brute force</em> is used in computer science to describe algorithms that take an obvious direct approach to solving a problem. While the term might have a pejorative ring, implying a &quot;thoughtless&quot; approach, many important problems are best solved with a brute force approach.</p>
+</aside>
+<p>This algorithm is stochastic, an important feature of microsimulations, and of the remaining unmatched agents, it finds the ideal partner for the current agent under consideration; in terms of our ranking system defined above its quality is the best of the algorithms we consider here. But it has a serious drawback; it is very slow, and far too slow for Monte Carlo simulation. It is <span class="math">\(O(n^2)\)</span>. Furthermore, it is not clear if it is sufficiently stochastic. Nevertheless it is a good reference algorithm against which to compare our faster algorithms.</p>
+<p>Now we will look at four algorithms, from worst to best, that sacrifice quality of partner selection for speed. There mean and median rankings are worse than brute force, but they are much faster, with asymptotic efficiency classes of <span class="math">\(O(n)\)</span> and <span class="math">\(O(n \log n)\)</span>.</p>
+<h3 id="random-match">Random match</h3>
+<p>Our first optimisation algorithm is silly and trivial, effectively the worst we can do without thinking, but it is a good reference against which to compare the cleverer algorithms that follow. For each agent, it randomly selects an unmatched partner in the population to match it with. Here is the pseudo-code:</p>
+<pre><code>random_match(Agents):
+    shuffle the agents
+    for i = 0 to agents.length - 1 step 2
+        make Agents[i] and Agents[i+1] partners</code></pre>
+<p>Shuffling is an <span class="math">\(O(n)\)</span> operation. The <em>for</em> loop is also an <span class="math">\(O(n)\)</span> operation. This ineffective algorithm is therefore <span class="math">\(O(n + n) = O(2n) = O(n)\)</span> and at least has the merit of being as efficient as, for example, the <em>DIE</em> event we discussed above. On average it will select the 50th percentile most (or least) suitable agent.</p>
+<h3 id="random-match-k">Random match k</h3>
+<p>The next algorithm is a small conceptual advance on <em>random_match</em>. Instead of only considering the randomly assigned neighbour, we consider <span class="math">\(k\)</span> neighbours, where <span class="math">\(k\)</span> is a constant. Here is the algorithm, which consists of two functions:</p>
+<pre><code>random_match_k(Agents, k)
+    shuffle(Agents)
+    find_best_of_k_neighbours(Agents, k)
+
+find_best_of_k_neighbours(Agents, k)
+    for each agent, a, in Agents
+        best = infinity
+        for each agent, b, of k or fewer unmatched agents to the right of a
+            d = distance(a, b)
+            if d &lt; best
+                best = d
+                best_partner = b
+        make a and best_partner partners</code></pre>
+<p>The asymptotic efficiency class is <span class="math">\(O(n + kn) = O([k + 1]n) = O(n)\)</span>, since <span class="math">\(k\)</span> is a constant.</p>
+<p>Surprisingly, unlike <em>random_match</em> the quality of this simple algorithm is quite good. To see why, consider that if you randomly draw <span class="math">\(k\)</span> numbers from a set of <span class="math">\(n\)</span> numbers in the range <span class="math">\([0..1)\)</span>, the expected (or mean) value, <span class="math">\(p\)</span>, of the smallest number drawn is given by this equation:</p>
+<p><span class="math">\[p = \frac{1}{k + 1}\]</span></p>
+<p>The median, <span class="math">\(m\)</span>, is given by this equation:</p>
+<p><span class="math">\[{(1-m)}^k = 0.5\]</span></p>
+<p>For <span class="math">\(k &gt; 1\)</span>, the median is smaller than the mean.</p>
+<p>Both equations are independent of <span class="math">\(n\)</span>, the number of agents. Simply by choosing a value of <span class="math">\(k\)</span> greater than 100, on average the partner chosen will be ranked in the top <span class="math">\(1\%\)</span> in suitability from the remaining available partners. This is quite surprising and if rejector attributes dominate the distance calculation, I doubt a better quality algorithm that (a) makes no use of domain specific knowledge outside the distance function, and (b) is more efficient than <span class="math">\(O(n^2)\)</span> can be found.</p>
+<p>The next two algorithms depend on the attractor attributes contributing significantly to the distance function. If the rejector attributes are dominant, these algorithms will likely have no advantage over the <em>random match k</em> algorithm, and might even be worse.</p>
+<p>In simulating the HIV epidemic, the attractor attributes of the microsimulation I have worked on are typically dominant. Age and risk are the main attractor attributes. Sex is the main rejector attribute when modelling the heterosexual epidemic, but on average every second neighbour will be the opposite sex of the agent under consideration, so there should be enough suitable neighbours for most agents. Previous partners are rejectors, but these are relatively few in number. It's conceivable though that in a much more sophisticated model the rejector attributes might dominate.</p>
+<h3 id="weighted-shuffle-match">Weighted shuffle match</h3>
+<p>The third optimisation algorithm is the same as <em>random match k</em> algorithm, except that agents with similar attributes are shuffled so that they are more likely to be clustered together. To do this we need to write a <em>cluster</em> function, that is based solely on the attractor attributes of the distance function. While it is domain specific, a programmer without knowledge of the domain should be able to work out the cluster function quite easily by examining the distance function.</p>
+<p>Here is the cluster function pseudocode for the <em>distance</em> function above:</p>
+<pre><code>cluster(a) // a is an agent, returns real number
+    return AGE_FACTOR * a.date_of_birth + RISK_FACTOR * a.riskiness</code></pre>
+<p>Here is the pseudocode for weighted shuffling partner matching. We assume there is a function called rand() which returns a random number on the semi-open range <span class="math">\([0,1)\)</span>.</p>
+<pre><code>weighted_shuffle_match(Agents, k)
+// Agents is an array of agents
+// k is the number of neighbours to search
+    for each agent, a, in Agents
+        a.weight = cluster(a) * rand()
+    sort Agents in weight order
+    find_best_of_k_neighbours(Agents, k)</code></pre>
+<p>Sorting has the slowest efficiency class of this algorithm because it is <span class="math">\(O(n \log n)\)</span>. Therefore this is an <span class="math">\(O(n \log n)\)</span> algorithm.</p>
+<h3 id="cluster-shuffle-match">Cluster shuffle match</h3>
+<p>The final optimisation algorithm is the most sophisticated and also uses the <em>cluster</em> function.</p>
+<p>Instead of weighting the shuffle, the Agents are divided into a specified number of clusters based on the value of the <em>cluster</em> function. Then each cluster is shuffled. Finally, just as with <em>weighted_shuffle_match</em> we invoke the <em>find_best_of_k_neighbours</em> algorithm. Here is the pseudocode:</p>
+<pre><code>cluster_shuffle_match(Agents, c, k)
+// Agents is an array of agents
+// c is the number of clusters
+// k is the number of neighbours to search
+    for each agent, a, in Agents
+        a.weight = cluster(a)
+    sort agents in weight order
+    cluster_size = number of agents / c
+    i = 0
+    for each cluster
+        first = i * cluster_size
+        last = first + cluster_size
+        shuffle Agents[first ... last - 1]
+        ++i
+    find_best_of_k_neighbours(Agents, k)</code></pre>
+<h2 id="methodology">Methodology</h2>
+<p>I conducted empirical tests for speed and quality of these five algorithms: <em>brute force</em>, <em>random match</em>, <em>random match k</em>, <em>weighted shuffle</em> and <em>cluster shuffle</em>. The <em>brute force</em> algorithm is included as the gold standard for quality, but also the slowest. The <em>random match</em> is included because any algorithm worthy of replacing <em>brute force</em> must compare much better than <em>random match</em> in quality.</p>
+<p>The algorithms were coded in C++ (ISO C11) and compiled with the GNU C++ compiler (version 4.8.2). The speed tests were executed on a Lenovo ThinkPad notebook containing an Intel Core i5-3320M CPU 2.6 GHZ x 2, with operating system GNU/Linux Mint 17 Cinnamon 64-bit and 12GB of RAM. Each simulation was executed for 20 iterations and every one of the 16,384 agents was matched on every iteration. Twelve simulations were run for a total of 240 iterations (in other words each algorithm was executed 240 times).</p>
+<p>The quality tests included the results of the simulations run for the timing tests and twenty further simulations (all other parameters the same) executed on the UCT High Performance Cluster (HPC), http://hex.uct.ac.za. The results from separate runs on both machines were combined.</p>
+<p>The code is available for download at https://github.com/nathangeffen/pairmatch. It is available under the GNU General Public License Version 3. Fork the repository and run <em>make</em> in the code sub-directory to compile the code.</p>
+<p>The command line used to execute the tests on the notebook is: ./partnermatch -p 16384 -r 12 -i 20 -c 64 -n 128</p>
+<p>The command used to execute the tests on the HPC is: ./partnermatch -p 16384 -r 20 -i 20 -c 64 -n 128 -s 19548</p>
+<h3 id="explanation-of-command-line-arguments">Explanation of command line arguments</h3>
+<ul>
+<li>-p sets the number of agents.</li>
+<li>-r sets the number of simulations to run.</li>
+<li>-i sets the number of iterations for each simulation.</li>
+<li>-c sets the number of clusters for the <em>Cluster shuffle</em> algorithm.</li>
+<li>-n sets the number of neighbours for three of the five algorithms.</li>
+<li>-s sets the seed for the pseudo-random number generator, the C++11 STL Mersenne Twister. If this option is not specified the seed is 0.</li>
+</ul>
+<h2 id="results">Results</h2>
+<h3 id="speed">Speed</h3>
+<p>The simulations running the <em>brute force</em> algorithm took on average 2.3 seconds each (i.e. 20 iterations of matching all 16,384 agents). The <em>random match</em> algorithm took 2 milliseconds on average, versus approximately 20ms for the remaining three. <em>Random match k</em>, <em>cluster shuffle</em> and <em>weighted shuffle</em> simulations executed about 110 times faster than <em>brute force</em>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center"></th>
+<th align="center">Brute force</th>
+<th align="center">Random match</th>
+<th align="center">Random match k</th>
+<th align="center">Cluster shuffle</th>
+<th align="center">Weighted shuffle</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Mean (ms)</td>
+<td align="center">2,337</td>
+<td align="center">2</td>
+<td align="center">20</td>
+<td align="center">21</td>
+<td align="center">22</td>
+</tr>
+<tr class="even">
+<td align="center">Speedup</td>
+<td align="center">1</td>
+<td align="center">1,438</td>
+<td align="center">116</td>
+<td align="center">112</td>
+<td align="center">105</td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<img src="graph_comparing_speeds.png" title="Comparison of speeds of five algorithms" alt="Comparison of speeds of five algorithms" />
+<p class="caption">Comparison of speeds of five algorithms</p>
+</div>
+<h3 id="quality">Quality</h3>
+<p>On average, the partners of agents in the <em>brute force</em> algorithm were 846 agents from the ideal partner (median 288). The <em>cluster shuffle</em> algorithm was a close second with a mean distance of 966 (median 449) followed some way back in quality by <em>weighted shuffle</em> and <em>random match k</em>. The three approximation algorithms performed from 5.2 to 8.5 times as well as <em>random match</em>. Brute force performed 9.7 times better than <em>random match</em>.</p>
+<p>This table presents the statistics in detail. Each statistic (mean, median, standard deviation and interquartile range) is an average (mean) over 32 simulations of 20 iterations each.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Average</th>
+<th align="center">Brute force</th>
+<th align="center">Cluster shuffle</th>
+<th align="center">Weighted shuffle</th>
+<th align="center">Random match k</th>
+<th align="center">Random match</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean<br/>[95%]</td>
+<td align="center">846 [842-848]</td>
+<td align="center">966 [961-971]</td>
+<td align="center">1,575 [1563-1587]</td>
+<td align="center">1,583 [1571-1595]</td>
+<td align="center">8,190 [8186-8194]</td>
+</tr>
+<tr class="even">
+<td align="left">Median</td>
+<td align="center">288</td>
+<td align="center">449</td>
+<td align="center">976</td>
+<td align="center">983</td>
+<td align="center">8,191</td>
+</tr>
+<tr class="odd">
+<td align="left">Std dev</td>
+<td align="center">1,286</td>
+<td align="center">1,273</td>
+<td align="center">1,681</td>
+<td align="center">1,686</td>
+<td align="center">4,729</td>
+</tr>
+<tr class="even">
+<td align="left">IQR</td>
+<td align="center">29-1246</td>
+<td align="center">98-1442</td>
+<td align="center">332-2311</td>
+<td align="center">335-2323</td>
+<td align="center">4096-12287</td>
+</tr>
+</tbody>
+</table>
+<p>The following graphs graphically depict these findings.</p>
+<div class="figure">
+<img src="graph_comparing_mean_five_algorithms.png" title="Graph showing that the approximation algorithms perform much better than random matching" alt="Approximation algorithms perform much better than random matching" />
+<p class="caption">Approximation algorithms perform much better than random matching</p>
+</div>
+<div class="figure">
+<img src="graph_comparing_stats_four_algorithms.png" title="Graph comparing the approximation algorithms with brute force and each other" alt="Approximation algorithms compared to brute force and each other" />
+<p class="caption">Approximation algorithms compared to brute force and each other</p>
+</div>
+<h2 id="conclusions">Conclusions</h2>
+<h3 id="findings">Findings</h3>
+<p>As expected, the <em>brute force</em> algorithm produces the best quality partner matches, i.e. each agent is on average paired with more suitable partners than the other four algorithms. However, it is the slowest algorithm by approximately two orders of magnitude.</p>
+<p>All three approximation algorithms are of much greater quality than the <em>random match</em> algorithm.</p>
+<p>The <em>cluster shuffle</em> algorithm produces the highest quality results of the approximation algorithms, and might be able to replace the <em>brute force</em> algorithm in simulations where speed is vital.</p>
+<p>The <em>random match k</em> algorithm produced good results and the <em>weighted shuffle</em> algorithm did not perform significantly better than it.</p>
+<h3 id="limitations">Limitations</h3>
+<p>There are a few limitations of this research:</p>
+<ul>
+<li>These results are preliminary and need to be verified.</li>
+<li>There is a criticism of the way I have measured quality that I am investigating.</li>
+<li>The algorithms have been tested with only one difference function. It is possible that substantial but plausible changes in the difference function might produce vastly different results.</li>
+</ul>
+<h3 id="further-research">Further research</h3>
+<h4 id="robustly-determining-the-optimal-number-of-clusters-and-neighbours">Robustly determining the optimal number of clusters and neighbours</h4>
+<p>The numbers of clusters (64) and neighbours (128) used in the tests were derived through a haphazard trial and error process, as a good compromise between quality and speed. Further research should derive these methodically.</p>
+<h4 id="trying-different-difference-functions">Trying different difference functions</h4>
+<p>It needs to be seen how sensitive the quality findings are to variations of the difference function.</p>
+<h4 id="using-parallel-algorithms">Using parallel algorithms</h4>
+<p>There are parts of <em>random_match_k</em>, <em>weighted_shuffle_match</em> and <em>cluster_shuffle_match</em> that lend themselves to parallel implementations, for example sorting, or finding the nearest among <span class="math">\(k\)</span> neighbours. It might be worth testing whether significant speed gains can be obtained in highly parallel hardware, such as that offered by UCT's High Performance Computing Centre.</p>
+<h4 id="the-real-test-an-actual-simulation">The real test: an actual simulation</h4>
+<p>The practical value of these algorithms depends on how well they perform in a simulation of an epidemic such as HIV or TB. This is the next step in my PhD, to implement a simple, but realistic microsimulation, and to compare how these algorithms perform, perhaps with a view to carrying out a Monte Carlo analysis so that 95% confidence intervals can be constructed for the outputs.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<ul>
+<li>Michelle Kuttel (supervisor)</li>
+<li>Andrew Boulle (co-supervisor)</li>
+<li>Leigh Johnson</li>
+<li>Nicoli Nattrass</li>
+<li>SACEMA</li>
+<li>UCT Centre for Social Science Research</li>
+<li>UCT Department of Computer Science</li>
+<li>Some computations were performed using facilities provided by UCT's ICTS High Performance Computing team: http://hpc.uct.ac.za</li>
+</ul>
+</body>
+</html>

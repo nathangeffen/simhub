@@ -1,0 +1,47 @@
+# Why is the SAJBD rejecting a two-state solution?
+
+Nathan Geffen
+
+30 October 2011
+
+Nathan Geffen says board shouldn't be defending narrow interests of current Israeli govt
+
+[Source](http://www.politicsweb.co.za/politicsweb/view/politicsweb/en/page71619?oid=264097&sn=Detail)
+
+On 12 May 1948 the Provisional State Council of Israel decided by 6 votes to 4 to declare their state on the expiration of the British Mandate for Palestine, two days later. It was also decided not to indicate the borders of the new state in the declaration on independence, so as to leave open the possibility of expansion beyond the 1947 UN partition plan.
+
+Under Ben Gurion's leadership, the early state began using a combination of diplomacy and military force to acquire territory. Even in 1948 Israel had military supremacy. Although it had a technological disadvantage until an arms shipment arrived from Czechoslovakia, Israelies outnumbered the opposing forces at all stages of the war.
+
+Ben Gurion put the world to terms on recognizing Israel's existence. He also understood then something that has been true for the following 62 years: non-specification of borders suits the strong.
+
+The leadership of the Arabs in Palestine rejected the UN partition plan. As a matter of principle we can understand it; they were allocated one third of the land while constituting two thirds of the population. But the 1948-49 war left them with less land and the permanent displacement of 700,000 men, women and children.
+
+The bid by the Palestinian Authority for United Nations recognition is an attempt to transcend this history. It has opponents both left and right. Some on the left advocate a single state, hoping to put aside national and religious identities in a secular country. Considering that Germany and France - which in two world wars killed millions of each other's soldiers - now have an open border and a common currency, it is possible that one day there will be normal relations between Israelis and Palestinians, but a one-state solution is currently inconceivable.
+
+Unlike in South Africa where urbanization made black people the majority in the cities, in Israel there is effective territorial separation, due in part to the substitution of Palestinian labour by migrant workers from Asia. This is a political fact which must be reckoned with by proponents of a one-state solution. The Israeli military cannot be wished away, nor the root of its support: a combination of Jewish nationalism across the world and the fear of genocide.
+
+For those interested in moving towards a just solution in Israel and Palestine, stopping the settlement enterprise must be the first objective. And this is the great strength of the current Palestinian move towards recognition of statehood; although it won't immediately give them the reality of independence, it does define their aspirations in crystal clear terms, drawing the border along the internationally recognized pre-1967 line, rendering every settlement a violation of sovereignty, exposing the Israeli occupation for the unilateral annexation that it is, and showing that the goal of the Palestinian Authority is not to drive the Jews into the sea.
+
+The Israeli right-wing, which is firmly in control of the country, opposes UN recognition of Palestinian statehood precisely because it brings to a head the questions they were hoping to spin out into eternity. They argue that the move is ‘unilateral' and therefore wrong. But as Yael Dayan, the chair of the Tel Aviv city council asked recently: "Isn't the occupation unilateral? Are both sides occupying?"
+
+What do the Palestinian, Israeli, US, EU and South African governments have in common? They all claim to support a two-state solution to the Israeli-Palestinian conflict. But the Palestinian bid has exposed very clearly that Israel and its allies are only ready to pay lip-service to the idea. The truth is that the current Israeli government --and indeed all recent ones-- are not ready for a two-state solution. The occupation is not a source of sufficient moral discomfort to Israelis. Except for the minority who do combat military service, the oppression of Palestinians is out of sight and mind for the average Israeli.
+
+It is against this background that the Palestinian Authority has played its gambit. It is undoubtedly risky, but what else is left for the Palestinian leadership to do to try and shake the status quo? Betrayed by successive US governments, increasingly excluded from the Israeli economy and with its citizens suffering severe restrictions on movement and political organisation what other options are left?
+
+The Jewish Board of Deputies and South African Zionist Federation expressed regret that the South African government has indicated its support for the Palestinian bid, with the feeble excuse that the Palestinian decision is unilateral. They never oppose Israel's unilateral actions. The Zionist Federation's position is unsurprising. Its agenda as a front for the settler movement is barely disguised. It is consistently to the right of even the Israeli ambassadors sent to South Africa. Former Ambassador Alon Liel recently endorsed the Palestinian bid, stating: "I'd like to see a state that will vote against Palestinian statehood. History will judge them, and that includes Israel."
+
+It is however deeply disappointing, albeit expected, that the Board of Deputies took the same position.
+
+The Board has an important mission:
+
+"The SAJBD works for the betterment of human relations between Jews and all other peoples of South Africa based on mutual respect, understanding and goodwill, and to protect the civil liberties of South African Jews. It is committed to a South Africa where everyone will enjoy freedom from the evils of prejudice, intolerance and discrimination."
+
+There is nothing about supporting the narrow interests of the current Israeli government.
+
+To a large extent the Board tries hard to fulfil its mission, especially the Cape Town chapter. But it consistently fails when it takes positions on Israel. The Board's job is to represent South African Jews, defend our civil rights --no matter what our positions on Israel-- and to build ties with other communities. By publicly opposing the Palestinian bid and our government's position on it, the Board does a disservice to its mission and to South African Jews.
+
+Opposition to Palestinian statehood also does a disservice to Israelis. International recognition of Palestine in the West Bank and Gaza, with its capital in East Jerusalem, would give Israel recognition of West Jerusalem, something it has never had before.
+
+Let us hope that sense prevails before it is too late.
+
+*Nathan Geffen is visiting researcher at the Centre for Social Science Research, UCT.*

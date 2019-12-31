@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <script type="text/javascript" src="jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="jquery.async.js"></script>
+    <script type="text/javascript" src="partnermatch.js"></script>
+    <title>SVG test</title>
+  </head>
+
+<body>
+  <div style="border-style:solid; padding: 15px; margin: 15px;">
+  <svg id="svg1" style="width:90%; height: 100px; display:none;">
+    <circle id="c0_0" cx="40" cy="40" r="15" stroke="black"
+	    stroke-width="2" fill="white" />
+    <text id="t0_0" x="35" y="43" font-family="sans-serif"
+	  font-size="12px" fill="black">0</text>
+  </svg>
+  <input id="nevent-button" type="button" value="Show algorithm for O(n) event"
+         onclick="nEvent()"/>
+  </div>
+
+  <div style="border-style:solid; padding: 15px; margin: 15px;">
+  <svg id="svg2" style="width:90%; height: 100px; display:none;">
+    <circle id="c1_0" cx="40" cy="40" r="15" stroke="black"
+	    stroke-width="2" fill="white" />
+    <text id="t1_0" x="35" y="43" font-family="sans-serif"
+	  font-size="12px" fill="black">0</text>
+  </svg>
+  <input id="nsqevent-button" type="button"
+	 value="Show algorithm for O(n^2) event"
+         onclick="nsqEvent()"/>
+  </div>
+
+</body>
