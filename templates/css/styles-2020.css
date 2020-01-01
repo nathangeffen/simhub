@@ -51,7 +51,10 @@ p#dateline {
 }
 
 pre {
-    font-size: 0.7em;
+    font-family: monospace;
+    font-size: 66%;
+    background-color: lightgray;
+    padding: 10px;
 }
 
 img {
@@ -150,6 +153,14 @@ ul.errorlist {
     color: #D8000C;
 }
 
+#output {
+    height: 180px;
+    overflow-y: scroll;
+    font-size: 15px;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding-left: 22px;
+}
 
 footer {
     border-top: 1px solid lightgray;
