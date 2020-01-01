@@ -162,6 +162,13 @@ ul.errorlist {
     padding-left: 22px;
 }
 
+#output li {
+    margin-left: 24px;
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
+
 footer {
     border-top: 1px solid lightgray;
 }
