@@ -168,6 +168,10 @@ ul.errorlist {
     margin-top: 4px;
 }
 
+.help-symbol {
+    color: blue;
+    cursor: pointer;
+}
 
 footer {
     border-top: 1px solid lightgray;
