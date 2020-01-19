@@ -51,10 +51,7 @@ p#dateline {
 }
 
 pre {
-    font-family: monospace;
-    font-size: 66%;
-    background-color: lightgray;
-    padding: 10px;
+    font-size: 0.7em;
 }
 
 img {
@@ -153,25 +150,75 @@ ul.errorlist {
     color: #D8000C;
 }
 
-#output {
-    height: 180px;
-    overflow-y: scroll;
-    font-size: 15px;
-    border: 1px solid black;
-    border-radius: 10px;
-    padding-left: 22px;
-}
-
-#output li {
-    margin-left: 24px;
-    margin-bottom: 4px;
-    margin-top: 4px;
-}
 
 .help-symbol {
+    width: 5px !important;
     color: blue;
-    cursor: pointer;
+    cursor:move;
 }
+
+.help-text {
+    border: 1px solid lightgray;
+    padding: 6px;
+    font-size: 0.8em;
+}
+
+#traveler-form, #animation {
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+@media (min-width: 800px) {
+
+    #traveler-form label {
+        display:block;
+        text-align: right;
+        width: 249px;
+        clear: left;
+        float:left;
+        padding-right: 5px;
+        font-size: 0.8em;
+    }
+
+    #traveler-form input {
+        margin-right: 3px;
+    }
+    #buttons {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        padding-left: 249px;
+    }
+
+    #animation label {
+        margin-top: 3px;
+        font-size: 0.8em;
+        display: inline;
+    }
+}
+
+@media (max-width: 799px) {
+    #traveler-form label {
+        padding-top: 6px;
+    }
+    #traveler-form input {
+        margin-right: 3px;
+        width: 25%;
+    }
+    #buttons {
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
+}
+
+
+#animation button {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    display: block;
+}
+
 
 footer {
     border-top: 1px solid lightgray;
