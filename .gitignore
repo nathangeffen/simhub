@@ -6,4 +6,5 @@ logs/*
 *~
 \#*
 local_settings.py
+blog/raw/
 

@@ -9,6 +9,19 @@
     {{article.additional_header}}
 {% endblock %}
 
+{% block context-menu %}
+    {{block.super}}
+    {% if perms.blog.change_article %}
+        <ul>
+            <li>
+                <a href="{% url 'admin:blog_article_change' article.id %}">
+                    Edit
+                </a>
+            </li>
+        </ul>
+    {% endif %}
+{% endblock %}
+
 {% block pagetitle %}
 
 {% endblock %}

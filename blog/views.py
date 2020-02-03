@@ -4,6 +4,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404
+from django.contrib import messages
 
 from .models import Article
 
@@ -16,31 +17,34 @@ class HomeView(TemplateView):
     template_name = 'blog/home.html'
 
 class ArticleListView(ListView):
-
-    def get_queryset(self):
-        return Article.objects.published()
     model = Article
     template_name = 'blog/list.html'
 
+    def get_queryset(self):
+        return Article.objects.published()
+
 class ArticleDetailView(DetailView):
-    pass
-    # template_name = 'blog/detail.html'
+    model = Article
 
-def article_view(request, slug):
-    article = get_object_or_404(Article, slug=slug)
-    if request.user.is_staff and article.is_published is False:
-        messages.add_message(request, messages.INFO,
-                             "This article is not published.")
-    elif request.user.is_staff is False and article.is_published is False:
-        raise Http404
-    title_bar = str(article.slug).replace("_", " ")
-    title_bar = title_bar.replace("-"," ").title()
+    def get_object(self, queryset=None):
+        article = super().get_object(queryset)
+        if self.request.user.is_staff is False:
+            if article.is_published() is False:
+                raise Http404
 
-    return render(request, article.template,
-                  {'title_bar': title_bar, 'article': article})
+        if article.is_published() is False:
+            messages.add_message(self.request, messages.INFO,
+                                 "This article is not published.")
+        return article
 
+    def get_template_names(self):
+        return self.object.template
 
-
+    def  get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["title_bar"] = str(self.object.slug).replace("-"," ").\
+                               replace("_", " ")
+        return context
 
 class AboutView(TemplateView):
     template_name = 'blog/about.html'
