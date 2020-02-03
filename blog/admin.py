@@ -11,5 +11,12 @@ class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'modified'
     ordering = ['-modified',]
     readonly_fields = ['created', 'modified', ]
+    actions_on_bottom = True
+    actions_on_top = True
+    save_on_top = True
 
 admin.site.register(Article, ArticleAdmin)
+
+admin.site.site_header = "Simhub admin"
+admin.site.site_title = "Simhub site admin"
+admin.site.index_title = "Simhub administration"
