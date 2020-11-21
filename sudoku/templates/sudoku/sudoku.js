@@ -489,7 +489,7 @@
             });
             if (getMobileOS() === "Android") {
                 block.addEventListener("focus", function(e) {
-                    e.target.blur();
+                    block.blur();
                 });
             }
             block.addEventListener('keydown', function(e) {
@@ -604,7 +604,7 @@
         const innerhtml = '<p class="sudoku-incomplete">Puzzle completed</p> ' +
               '<table class="sudoku-table"> '+
               '<tr id="sudoku-tr-0"> '+
-              '<td class="sudoku-td-0" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-0" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-1" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-2" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-3" contenteditable=true>&nbsp;</td> '+
