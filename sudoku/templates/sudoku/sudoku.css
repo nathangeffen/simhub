@@ -116,14 +116,15 @@
 
 .sudoku-buttons {
     text-align: center;
+    margin: auto;
 }
 
 .sudoku-buttons button {
-    width: 7vmin;
-    height: 7vmin;
+    width: 6.2vmin;
+    height: 6.2vmin;
     margin-top: 12px;
     margin-bottom: 12px;
-    margin-right: 5px;
+    margin-right: 3px;
     border: 2px solid black;
     border-radius: 12px;
 }
