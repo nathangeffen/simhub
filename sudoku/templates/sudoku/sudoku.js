@@ -486,7 +486,7 @@
         let android = false;
         if (getMobileOS() === "Android") android = true;
         for (let block of blocks) {
-            if (android) {
+            if (true) {
                 block.addEventListener("focus", function(e) {
                     block.blur();
                 });
@@ -602,8 +602,6 @@
     }
 
     const insertTable = (sudoku_div) => {
-        if (getMobileOS() === "Android") android = true;
-
         const innerhtml = '<p class="sudoku-incomplete">Puzzle completed</p> ' +
               '<table class="sudoku-table"> '+
               '<tr id="sudoku-tr-0"> '+
