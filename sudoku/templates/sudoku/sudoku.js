@@ -483,10 +483,15 @@
 
     const setupTable = (sudoku_div_id, sudoku_table) => {
         let blocks = sudoku_table.getElementsByTagName('td');
-        for (const block of blocks) {
+        for (let block of blocks) {
             block.addEventListener("focus", function(e) {
                 setActiveBlock(e.target);
             });
+            if (getMobileOS() === "Android") {
+                block.addEventListener("focus", function(e) {
+                    e.target.blur();
+                });
+            }
             block.addEventListener('keydown', function(e) {
                 const c = String.fromCharCode(e.keyCode);
                 if (' 0123456789'.includes(c)) {
@@ -592,11 +597,6 @@
         if (options.clues_on == false) {
             toggleClues(sudoku_div_id, clues_btn);
         }
-        if (options.suppress_android_keyboard === true) {
-            if (getMobileOS() === "Android") {
-                suppressAndroidKeyboard();
-            }
-        }
     }
 
 
@@ -604,7 +604,7 @@
         const innerhtml = '<p class="sudoku-incomplete">Puzzle completed</p> ' +
               '<table class="sudoku-table"> '+
               '<tr id="sudoku-tr-0"> '+
-              '<td class="sudoku-td-0" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-0" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-1" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-2" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-3" contenteditable=true>&nbsp;</td> '+
@@ -758,8 +758,7 @@
             clues_on: true,
             digit_buttons: true,
             restart_button: true,
-            clues_button: true,
-            suppress_android_keyboard: true
+            clues_button: true
         };
         for (let [key, value] of Object.entries(options)) {
             if (key in default_options) {
