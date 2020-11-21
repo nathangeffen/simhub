@@ -594,7 +594,7 @@
         }
         if (options.suppress_android_keyboard === true) {
             if (getMobileOS() === "Android") {
-                //suppressAndroidKeyboard();
+                suppressAndroidKeyboard();
             }
         }
     }
