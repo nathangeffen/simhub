@@ -605,9 +605,9 @@
         const innerhtml = '<p class="sudoku-incomplete">Puzzle completed</p> ' +
               '<table class="sudoku-table"> '+
               '<tr id="sudoku-tr-0"> '+
-              '<td class="sudoku-td-0" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
-              '<td class="sudoku-td-1" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
-              '<td class="sudoku-td-2" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-0" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-1" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-2" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-3" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-4" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-5" contenteditable=true>&nbsp;</td> '+
