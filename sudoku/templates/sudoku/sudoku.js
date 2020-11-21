@@ -91,6 +91,25 @@
 
     // Functions with no side effects
 
+    const getMobileOS = () => {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+        // Windows Phone must come first because its UA also contains "Android"
+        if (/windows phone/i.test(userAgent)) {
+            return "Windows Phone";
+        }
+
+        if (/android/i.test(userAgent)) {
+            return "Android";
+        }
+
+        // iOS detection from: http://stackoverflow.com/a/9039885/177710
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            return "iOS";
+        }
+        return "unknown";
+    }
+
     const convertPuzzleStr = (str) => {
         let arr = []
         for (let i = 0; i < str.length; i++) {
@@ -253,6 +272,35 @@
         range.collapse(false);
         selection.addRange(range);
         el.focus();
+    }
+
+    const suppressAndroidKeyboard = () => {
+        //this set timeout needed for case when hideKeyborad
+        //is called inside of 'onfocus' event handler
+        setTimeout(function() {
+
+            //creating temp field
+            var field = document.createElement('input');
+            field.setAttribute('type', 'text');
+            //hiding temp field from peoples eyes
+            //-webkit-user-modify is nessesary for Android 4.x
+            field.setAttribute('style', 'position:absolute; top: 0px; opacity: 0; -webkit-user-modify: read-write-plaintext-only; left:0px;');
+            document.body.appendChild(field);
+            //adding onfocus event handler for out temp field
+            field.onfocus = function(){
+                //this timeout of 200ms is nessasary for Android 2.3.x
+                setTimeout(function() {
+
+                    field.setAttribute('style', 'display:none;');
+                    setTimeout(function() {
+                        document.body.removeChild(field);
+                        document.body.focus();
+                    }, 14);
+                }, 200);
+            };
+            //focusing it
+            field.focus();
+        }, 50);
     }
 
     const setBlockValue = (block, value) => {
@@ -508,7 +556,7 @@
                 } else {
                     setActiveBlock(block);
                     processBlock(sudoku_div_id, block);
-                    placeCursorAtEnd(block);
+                    //placeCursorAtEnd(block);
                     return;
                 }
             }
@@ -544,6 +592,11 @@
         if (options.clues_on == false) {
             toggleClues(sudoku_div_id, clues_btn);
         }
+        if (options.suppress_android_keyboard === true) {
+            if (getMobileOS() === "Android") {
+                //suppressAndroidKeyboard();
+            }
+        }
     }
 
 
@@ -551,7 +604,7 @@
         const innerhtml = '<p class="sudoku-incomplete">Puzzle completed</p> ' +
               '<table class="sudoku-table"> '+
               '<tr id="sudoku-tr-0"> '+
-              '<td class="sudoku-td-0" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-0" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-1" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-2" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-3" contenteditable=true>&nbsp;</td> '+
@@ -705,7 +758,8 @@
             clues_on: true,
             digit_buttons: true,
             restart_button: true,
-            clues_button: true
+            clues_button: true,
+            suppress_android_keyboard: true
         };
         for (let [key, value] of Object.entries(options)) {
             if (key in default_options) {

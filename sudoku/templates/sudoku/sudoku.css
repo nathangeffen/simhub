@@ -120,13 +120,13 @@
 }
 
 .sudoku-buttons button {
-    width: 6.2vmin;
-    height: 6.2vmin;
+    width: 7vmin;
+    height: 7vmin;
     margin-top: 12px;
     margin-bottom: 12px;
-    margin-right: 3px;
-    border: 2px solid black;
-    border-radius: 12px;
+    margin-right: 1px;
+    border: 1px solid black;
+    border-radius: 3px;
 }
 
 .sudoku-control {
