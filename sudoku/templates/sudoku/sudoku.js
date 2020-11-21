@@ -483,15 +483,17 @@
 
     const setupTable = (sudoku_div_id, sudoku_table) => {
         let blocks = sudoku_table.getElementsByTagName('td');
+        let android = false;
+        if (getMobileOS() === "Android") android = true;
         for (let block of blocks) {
-            block.addEventListener("focus", function(e) {
-                setActiveBlock(e.target);
-            });
-            if (getMobileOS() === "Android") {
+            if (android) {
                 block.addEventListener("focus", function(e) {
                     block.blur();
                 });
             }
+            block.addEventListener("focus", function(e) {
+                setActiveBlock(e.target);
+            });
             block.addEventListener('keydown', function(e) {
                 const c = String.fromCharCode(e.keyCode);
                 if (' 0123456789'.includes(c)) {
@@ -599,14 +601,15 @@
         }
     }
 
-
     const insertTable = (sudoku_div) => {
+        if (getMobileOS() === "Android") android = true;
+
         const innerhtml = '<p class="sudoku-incomplete">Puzzle completed</p> ' +
               '<table class="sudoku-table"> '+
               '<tr id="sudoku-tr-0"> '+
               '<td class="sudoku-td-0" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
-              '<td class="sudoku-td-1" contenteditable=true>&nbsp;</td> '+
-              '<td class="sudoku-td-2" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-1" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
+              '<td class="sudoku-td-2" onfocus="blur();" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-3" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-4" contenteditable=true>&nbsp;</td> '+
               '<td class="sudoku-td-5" contenteditable=true>&nbsp;</td> '+
