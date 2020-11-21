@@ -1,18 +1,28 @@
 {% extends 'base.html' %}
 
+{% block title %}
+    Play Sudoku!
+{% endblock %}
+
 {% block styles %}
     {{block.super}}
     <style>
      {% include 'sudoku/sudoku.css' %}
+
      p, ul, ol {
          max-width: 800px;
+     }
+     #pagetitle {
+         text-align: center;
      }
     </style>
 {% endblock %}
 
-{% block content %}
+{% block pagetitle %}
+    Sudoku puzzle # {{object.pk}}
+{% endblock %}
 
-    <h1>Sudoku puzzle # {{object.pk}}</h1>
+{% block content %}
 
     <div id="sudoku-{{object.pk}}"></div>
 
@@ -29,6 +39,25 @@
             <a href="{% url 'sudoku:detail' next.pk %}">Next</a>
         {% endif %}
     </p>
+
+    <h2>User interface</h2>
+    <ul>
+        <li>
+            Click 1 to 9 to toggle that digit on or off in a cell.<br />
+        </li>
+
+        <li>
+            Click the blank button to clear a cell.<br />
+        </li>
+
+        <li>
+            <span class="sudoku-one-to-one">Color of duplicate cells with single digit.</span>
+        </li>
+
+        <li>
+            <span class="sudoku-one-to-many">Color of duplicate cells with multiple digits.</span>
+        </li>
+    </ul>
 
     <script>
      {% include 'sudoku/sudoku.js' %}
