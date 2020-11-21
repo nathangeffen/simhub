@@ -486,7 +486,7 @@
         let android = false;
         if (getMobileOS() === "Android") android = true;
         for (let block of blocks) {
-            if (true) {
+            if (android) {
                 block.addEventListener("focus", function(e) {
                     block.blur();
                 });
