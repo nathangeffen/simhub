@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    {{block.super}}
+    <style>
+     {% include 'sudoku/sudoku.css' %}
+     p, ul, ol {
+         max-width: 800px;
+     }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h1>Sudoku puzzle # {{object.pk}}</h1>
+
+    <div id="sudoku-{{object.pk}}"></div>
+
+    <p>Difficulty: {{object.get_difficulty_display}}</p>
+
+    <p>
+        {% if prev %}
+            <a href="{% url 'sudoku:detail' prev.pk %}">Previous</a>
+            {% if next %}
+                &nbsp;|&nbsp;
+            {% endif %}
+        {% endif %}
+        {% if next %}
+            <a href="{% url 'sudoku:detail' next.pk %}">Next</a>
+        {% endif %}
+    </p>
+
+    <script>
+     {% include 'sudoku/sudoku.js' %}
+    </script>
+    <script>
+     "use strict";
+     const puzzle = '{{object.puzzle}}';
+     Sudoku.create('sudoku-{{object.pk}}', puzzle);
+    </script>
+{% endblock %}

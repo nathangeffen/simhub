@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'faststi.apps.FaststiConfig',
     'blog.apps.BlogConfig',
     'scheduler.apps.SchedulerConfig',
+    'sudoku.apps.SudokuConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
