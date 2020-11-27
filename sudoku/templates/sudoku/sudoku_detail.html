@@ -6,9 +6,9 @@
 
 {% block styles %}
     {{block.super}}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/nathangeffen/sudoku/ui/sudoku.css?v={% now 'Ymdhis' %}">
     <style>
-     {% include 'sudoku/sudoku.css' %}
-
      p, ul, ol {
          max-width: 800px;
      }
@@ -19,35 +19,65 @@
 {% endblock %}
 
 {% block pagetitle %}
-    Sudoku puzzle # {{object.pk}}
+    Sudoku puzzle {{object.pk}}
 {% endblock %}
 
 {% block content %}
 
+    <h2 style="text-align:center;">Published on {{object.published|date:"d M Y"}}</h2>
     <div id="sudoku-{{object.pk}}"></div>
 
     <p>Difficulty: {{object.get_difficulty_display}}</p>
 
-    <p>
-        {% if prev %}
-            <a href="{% url 'sudoku:detail' prev.pk %}">Previous</a>
-            {% if next %}
-                &nbsp;|&nbsp;
-            {% endif %}
-        {% endif %}
-        {% if next %}
-            <a href="{% url 'sudoku:detail' next.pk %}">Next</a>
-        {% endif %}
-    </p>
 
-    <h2>User interface</h2>
+        <p>
+            <a id ="prev"
+               href="{% url 'sudoku:nav' object.pk %}?nav=prev&diff={{object.difficulty}}">Previous</a>
+            |
+            <a id="next"
+               href="{% url 'sudoku:nav' object.pk %}?nav=next&diff={{object.difficulty}}">Next</a>
+
+            <select name="difficulty" id="difficulty">
+                <option value="0">Any</option>
+                {% for choice in choices|slice:"1:" %}
+                    <option value="{{choice.0}}"
+                            {% if choice.o == object.difficulty %}
+                            selected
+                            {% endif %}
+                    >{{choice.1}}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+    <h2>How to use this</h2>
     <ul>
         <li>
-            Click 1 to 9 to toggle that digit on or off in a cell.<br />
+            Click 1 to 9 to toggle that digit on or off in a cell.
         </li>
 
         <li>
-            Click the blank button to clear a cell.<br />
+            You can put multiple candidate digits in a cell.
+        </li>
+
+        <li>
+            Click the blank button to clear a cell.
+        </li>
+
+        <li>
+            Your edits are automatically saved on your computer. If you come
+            back to this URL with the same browser, your edits should still be
+            there.
+        </li>
+
+        <li>
+            Click the Note button while in a cell to move the digits in that
+            cell to the bottom right corner so that you remember it is
+            provisional.
+        </li>
+
+        <li>
+            Click on any cell with a single digit to see where the same digit is
+            in other cells.
         </li>
 
         <li>
@@ -59,12 +89,17 @@
         </li>
     </ul>
 
-    <script>
-     {% include 'sudoku/sudoku.js' %}
-    </script>
+    <script src="https://cdn.jsdelivr.net/gh/nathangeffen/sudoku/ui/sudoku.js?v={% now 'Ymdhis' %}"></script>
     <script>
      "use strict";
      const puzzle = '{{object.puzzle}}';
      Sudoku.create('sudoku-{{object.pk}}', puzzle);
+
+     document.getElementById('difficulty').addEventListener('change', function(e) {
+         document.getElementById('prev').href =
+             "{% url 'sudoku:nav' object.pk %}?nav=prev&diff=" + event.target.value;
+         document.getElementById('next').href =
+             "{% url 'sudoku:nav' object.pk %}?nav=next&diff=" + event.target.value;
+     });
     </script>
 {% endblock %}

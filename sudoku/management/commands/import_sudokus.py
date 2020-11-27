@@ -19,9 +19,9 @@ class Command(BaseCommand):
             lines = f.readlines()
             try:
                 with transaction.atomic():
-                    for line in lines:
+                    for puzzle in lines:
+                        puzzle = puzzle.strip()
                         p = None
-                        puzzle = line.split()[1]
                         if len(puzzle) != 81:
                             print("Puzzle length is incorrect", puzzle)
                             continue

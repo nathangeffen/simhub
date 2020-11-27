@@ -15,7 +15,6 @@ class Sudoku(models.Model):
         SIMPLE = '1', _('Simple')
         MEDIUM = '2', _('Medium')
         HARD = '3', _('Hard')
-        VERY_HARD = '4', _('Very hard')
 
     puzzle = models.CharField(max_length=81, unique=True)
     solution = models.CharField(max_length=81, blank=True)
@@ -30,7 +29,7 @@ class Sudoku(models.Model):
     objects = SudokuQuerySet.as_manager()
 
     def get_absolute_url(self):
-        return reverse('sudoku:detail', args=[self.puzzle, ])
+        return reverse('sudoku:detail', args=[self.pk, ])
 
     def is_published(self):
         return (self.published is not None) and \
