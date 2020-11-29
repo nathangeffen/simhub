@@ -93,7 +93,7 @@
     <script>
      "use strict";
      const puzzle = '{{object.puzzle}}';
-     Sudoku.create('sudoku-{{object.pk}}', puzzle);
+     Sudoku.create('sudoku-{{object.pk}}', puzzle, {stop_watch:true});
 
      document.getElementById('difficulty').addEventListener('change', function(e) {
          document.getElementById('prev').href =

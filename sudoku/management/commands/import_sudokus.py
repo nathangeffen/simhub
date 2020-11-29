@@ -8,12 +8,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('file',  type=str)
         parser.add_argument('--difficulty', type=str, default='0')
+        parser.add_argument('--start_date', type=str, default='0')
+
+
 
     def handle(self, *args, **options):
-
-        print(options['file'])
-        print(options['difficulty'])
-
 
         with open(options['file']) as f:
             lines = f.readlines()
