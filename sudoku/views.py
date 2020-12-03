@@ -24,6 +24,13 @@ class SudokuDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['choices'] = Sudoku.Difficulty.choices
+        print(self.request.GET)
+        if 'diff' in self.request.GET:
+            print("Here")
+            context['difficulty'] = self.request.GET['diff']
+        else:
+            print("There")
+            context['difficulty'] = '0'
         return context
 
 class SudokuLatest(SudokuDetailView):
@@ -49,16 +56,13 @@ def nav(request, pk):
         lo_diff = difficulty[0]
         hi_diff = difficulty[0]
 
-    print(nav, difficulty, lo_diff, hi_diff)
     try:
         if nav == 'next':
-            print('next')
             pk_new = Sudoku.objects.published(). \
                 filter(difficulty__gte=lo_diff). \
                 filter(difficulty__lte=hi_diff). \
                 filter(published__gt=puzzle.published).earliest('published').pk
         else:
-            print('prev')
             pk_new = Sudoku.objects.published(). \
                 filter(difficulty__gte=lo_diff). \
                 filter(difficulty__lte=hi_diff). \
@@ -66,4 +70,5 @@ def nav(request, pk):
     except Sudoku.DoesNotExist:
         pk_new=puzzle.pk
 
-    return HttpResponseRedirect(reverse('sudoku:detail', args=(pk_new,)))
+    url = reverse('sudoku:detail', args=(pk_new,)) + '?diff=' + difficulty
+    return HttpResponseRedirect(url)

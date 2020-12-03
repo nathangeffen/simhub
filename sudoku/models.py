@@ -12,13 +12,16 @@ class Sudoku(models.Model):
 
     class Difficulty(models.TextChoices):
         UNKNOWN = '0', _('Unknown')
-        SIMPLE = '1', _('Easy')
-        MEDIUM = '2', _('Medium')
-        HARD = '3', _('Hard')
-        VERY_HARD = '4', _('Very hard')
+        VERY_EASY = '1', _('Very easy')
+        EASY = '2', _('Easy')
+        MEDIUM = '3', _('Medium')
+        HARD = '4', _('Hard')
+        VERY_HARD = '5', _('Very hard')
+        EXTREMELY_HARD = '6', _('Extremely hard')
 
     puzzle = models.CharField(max_length=81, unique=True)
     solution = models.CharField(max_length=81, blank=True)
+    number = models.IntegerField(null=True)
     published = models.DateTimeField(blank=True, null=True,
                                      verbose_name=_('publish time'))
     difficulty = models.CharField(max_length=1,

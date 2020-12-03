@@ -19,12 +19,12 @@
 {% endblock %}
 
 {% block pagetitle %}
-    Sudoku puzzle {{object.pk}}
+    Sudoku puzzle {{object.number}}
 {% endblock %}
 
 {% block content %}
 
-    <h2 style="text-align:center;">Published on {{object.published|date:"d M Y"}}</h2>
+    <h2 style="text-align:center;">Published on {{object.published|date:"j M Y"}}</h2>
     <div id="sudoku-{{object.pk}}"></div>
 
     <p>Difficulty: {{object.get_difficulty_display}}</p>
@@ -32,21 +32,23 @@
 
         <p>
             <a id ="prev"
-               href="{% url 'sudoku:nav' object.pk %}?nav=prev&diff={{object.difficulty}}">Previous</a>
+               href="{% url 'sudoku:nav' object.pk %}?nav=prev&diff={{difficulty}}">Previous</a>
             |
             <a id="next"
-               href="{% url 'sudoku:nav' object.pk %}?nav=next&diff={{object.difficulty}}">Next</a>
+               href="{% url 'sudoku:nav' object.pk %}?nav=next&diff={{difficulty}}">Next</a>
 
             <select name="difficulty" id="difficulty">
                 <option value="0">Any</option>
                 {% for choice in choices|slice:"1:" %}
                     <option value="{{choice.0}}"
-                            {% if choice.o == object.difficulty %}
+                            {% if choice.0 == difficulty %}
                             selected
                             {% endif %}
                     >{{choice.1}}</option>
                 {% endfor %}
             </select>
+            &nbsp;
+            <a href="{% url 'sudoku:latest' %}">Latest</a>
         </p>
 
     <h2>How to use this</h2>
@@ -88,6 +90,31 @@
             <span class="sudoku-one-to-many">Color of duplicate cells with multiple digits.</span>
         </li>
     </ul>
+
+    <h2>Publishing schedule</h2>
+
+    <ul>
+        <li>Monday: Very easy</li>
+        <li>Tuesday: Easy</li>
+        <li>Wednesday: Easy</li>
+        <li>Thursday: Medium</li>
+        <li>Friday: Hard</li>
+        <li>Saturday: Very hard</li>
+        <li>Sunday: Extremely hard</li>
+    </ul>
+
+    <p>
+        The puzzles are computer generated. Sometimes an easy puzzle may be more
+        difficult than it should be and vice-versa.
+    </p>
+    <p>
+        The puzzles published on Saturdays and Sundays are very difficult and
+        will often only be solvable by the very best human solvers.
+    </p>
+    <p>
+        The source code for this user interface as well as the puzzle
+        generating and solving code are FLOSS and available on <a href="https://github.com/nathangeffen/sudoku">Github</a>.
+    </p>
 
     <script src="https://cdn.jsdelivr.net/gh/nathangeffen/sudoku/ui/sudoku.js?v={% now 'Ymdhis' %}"></script>
     <script>
